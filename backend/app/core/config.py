@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     app_name: str = "Smart School Diary API"
     environment: str = "development"
     api_v1_prefix: str = "/api"
-    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/smart_school_diary"
+    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/smart_diary"
     cors_origins: list[str] = ["http://localhost:3000"]
 
     model_config = SettingsConfigDict(
