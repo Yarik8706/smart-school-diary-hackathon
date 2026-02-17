@@ -15,6 +15,7 @@ router = APIRouter(prefix="/v1/homework", tags=["homework"])
 
 @router.post("", response_model=HomeworkRead, status_code=status.HTTP_201_CREATED)
 async def create_homework(payload: HomeworkCreate, db: AsyncSession = Depends(get_db)) -> HomeworkRead:
+    """Создать новое домашнее задание по предмету."""
     homework = await homework_crud.create_homework(db, payload)
     return HomeworkRead.model_validate(homework)
 
@@ -27,6 +28,7 @@ async def list_homeworks(
     deadline_to: date | None = Query(default=None),
     db: AsyncSession = Depends(get_db),
 ) -> list[HomeworkRead]:
+    """Получить список домашних заданий с фильтрами по предмету, срокам и статусу."""
     items = await homework_crud.list_homeworks(
         db,
         subject_id=subject_id,
@@ -39,6 +41,7 @@ async def list_homeworks(
 
 @router.get("/{homework_id}", response_model=HomeworkRead)
 async def get_homework(homework_id: uuid.UUID, db: AsyncSession = Depends(get_db)) -> HomeworkRead:
+    """Получить домашнее задание по идентификатору."""
     homework = await homework_crud.get_homework(db, homework_id)
     if homework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Homework not found")
@@ -51,6 +54,7 @@ async def update_homework(
     payload: HomeworkUpdate,
     db: AsyncSession = Depends(get_db),
 ) -> HomeworkRead:
+    """Обновить данные домашнего задания."""
     homework = await homework_crud.update_homework(db, homework_id, payload)
     if homework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Homework not found")
@@ -59,6 +63,7 @@ async def update_homework(
 
 @router.delete("/{homework_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_homework(homework_id: uuid.UUID, db: AsyncSession = Depends(get_db)) -> None:
+    """Удалить домашнее задание."""
     deleted = await homework_crud.delete_homework(db, homework_id)
     if not deleted:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Homework not found")
@@ -66,6 +71,7 @@ async def delete_homework(homework_id: uuid.UUID, db: AsyncSession = Depends(get
 
 @router.patch("/{homework_id}/complete", response_model=HomeworkRead)
 async def complete_homework(homework_id: uuid.UUID, db: AsyncSession = Depends(get_db)) -> HomeworkRead:
+    """Отметить домашнее задание как выполненное."""
     homework = await homework_crud.mark_homework_completed(db, homework_id)
     if homework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Homework not found")
