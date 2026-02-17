@@ -59,9 +59,9 @@ export default function SchedulePageClient() {
           расписание
         </p>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold tracking-tight md:text-4xl">
-            Расписание уроков
-          </h1>
+          <h2 className="text-2xl font-bold tracking-tight md:text-4xl">
+            План на неделю
+          </h2>
           <div className="flex w-full gap-2 md:w-auto">
             <Button variant="outline" onClick={() => setIsSubjectsOpen(true)}>
               Управление предметами

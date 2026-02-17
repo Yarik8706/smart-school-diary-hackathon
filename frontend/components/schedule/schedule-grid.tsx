@@ -32,13 +32,14 @@ export default function ScheduleGrid({
 
   return (
     <section className="space-y-4">
-      <div className="grid grid-cols-5 gap-1 md:hidden">
+      <div className="grid grid-cols-5 gap-1 overflow-x-auto md:hidden">
         {WEEK_DAYS.map((day) => (
           <Button
             key={day.value}
             size="sm"
             variant={selectedDay === day.value ? "default" : "outline"}
             onClick={() => onDaySelect(day.value)}
+            className="whitespace-nowrap"
           >
             {day.label}
           </Button>
@@ -60,8 +61,8 @@ export default function ScheduleGrid({
         )}
       </div>
 
-      <div className="hidden overflow-x-auto md:block">
-        <div className="grid min-w-[980px] grid-cols-5 gap-3">
+      <div className="hidden md:block">
+        <div className="grid grid-cols-5 gap-3">
           {WEEK_DAYS.slice(0, 5).map((day) => {
             const daySlots = getSlotsByDay(day.value);
             return (

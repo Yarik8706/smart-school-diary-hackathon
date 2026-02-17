@@ -1,9 +1,4 @@
-import {
-  IconCheck,
-  IconMoodSmile,
-  IconPencil,
-  IconTrash,
-} from "@tabler/icons-react";
+import { IconMoodSmile, IconPencil, IconTrash } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 import type { Homework, Subject } from "@/types/homework";
@@ -43,9 +38,6 @@ export function HomeworkCard({
             {homework.description || "Без описания"}
           </p>
         </div>
-        {homework.completed ? (
-          <IconCheck className="text-emerald-500" aria-label="Выполнено" />
-        ) : null}
       </div>
       <p
         className={`text-sm ${isPastDeadline(homework.deadline) ? "text-red-500" : "text-muted-foreground"}`}
@@ -74,13 +66,14 @@ export function HomeworkCard({
         <Button size="sm" variant="outline" onClick={() => onEdit(homework)}>
           <IconPencil size={16} /> Редактировать
         </Button>
-        <Button size="sm" variant="outline" onClick={() => onMood(homework)}>
+        <Button size="sm" variant="ghost" onClick={() => onMood(homework)}>
           <IconMoodSmile size={16} /> Оценить сложность
         </Button>
         <Button
           size="sm"
-          variant="destructive"
+          variant="ghost"
           onClick={() => onDelete(homework.id)}
+          className="text-destructive hover:bg-destructive/10 hover:text-destructive"
         >
           <IconTrash size={16} /> Удалить
         </Button>
