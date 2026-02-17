@@ -82,3 +82,30 @@
 
 - Unit/component tests for reminders are implemented with Vitest + Testing Library in `components/reminders/__tests__` and `store/__tests__/reminders.test.ts`.
 - Playwright integration coverage for `/reminders` lives in `tests/reminders.spec.ts`; browser execution in this container may require additional system libraries.
+- `HomeworkPage` in `app/homework/page.tsx` mounts `HomeworkPageClient` for the `/homework` route.
+- `HomeworkPageClient` in `components/homework/homework-page-client.tsx` orchestrates loading homework/subjects, client-side filters, and modal flows for create/edit/mood actions.
+- `HomeworkFilters` in `components/homework/homework-filters.tsx` exposes subject/status/deadline selectors and emits normalized filter state.
+- `HomeworkList` in `components/homework/homework-list.tsx` renders responsive homework cards and applies GSAP enter animation for card changes.
+- `HomeworkCard` in `components/homework/homework-card.tsx` shows subject tag, completion state, overdue highlight, and actions for edit/delete/complexity rating.
+- `HomeworkEditModal` in `components/homework/homework-edit-modal.tsx` validates title/deadline and handles add/update payload submission.
+- `MoodPicker` in `components/homework/mood-picker.tsx` submits difficulty (`easy`/`normal`/`hard`) with optional note.
+- `filterHomework`, `sortByDeadline`, `getStepsProgress`, and `isPastDeadline` in `components/homework/homework-utils.ts` provide filtering/sorting/progress and overdue helpers.
+- `useHomeworkStore` in `store/homework.ts` integrates `/api/v1/homework`, `/api/v1/subjects`, and `/api/v1/mood` endpoints through Zustand actions.
+
+## Types
+
+- `Homework`, `HomeworkCreate`, `HomeworkUpdate`, `HomeworkFiltersState`, `Subject`, and `MoodLevel` in `types/homework.ts` define homework domain + filter contracts.
+- `HomeworkStore` in `store/homework.ts` defines Zustand state/actions for CRUD, completion toggle, and mood submission.
+
+## Data Flow
+
+1. `/homework` renders `HomeworkPageClient`, which fetches homework and subject dictionaries on mount.
+2. Store actions call API endpoints and refresh homework list after create/update/delete/toggle mutations.
+3. `HomeworkFilters` updates local filter state; `filterHomework` + `sortByDeadline` derive visible cards.
+4. `HomeworkEditModal` and `MoodPicker` submit payloads through store actions and close on success.
+5. `HomeworkList` resolves subject metadata per card and animates card set changes with GSAP.
+
+## Notes
+
+- Unit/component TDD coverage for homework is implemented in `store/__tests__/homework.test.ts`, `components/homework/__tests__/homework-edit-modal.test.tsx`, and `components/homework/__tests__/homework-filters.test.tsx`.
+- Playwright smoke scenario for `/homework` lives in `tests/homework.spec.ts`.
