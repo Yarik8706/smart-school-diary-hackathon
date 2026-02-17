@@ -1,3 +1,3 @@
-from app.crud import schedule, subject
+from app.crud import homework, schedule, subject
 
-__all__ = ["schedule", "subject"]
+__all__ = ["homework", "schedule", "subject"]
