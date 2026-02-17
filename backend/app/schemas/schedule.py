@@ -13,7 +13,7 @@ class ScheduleSlotBase(BaseModel):
     day_of_week: int | None = Field(default=None, ge=0, le=6)
     start_time: time | None = None
     end_time: time | None = None
-    room_number: str | None = None
+    room: str | None = None
 
     @model_validator(mode="after")
     def validate_time_range(self) -> "ScheduleSlotBase":
@@ -42,7 +42,7 @@ class ScheduleSlotRead(BaseModel):
     day_of_week: int
     start_time: time
     end_time: time
-    room_number: str | None
+    room: str | None
     created_at: datetime
     updated_at: datetime
 
@@ -51,6 +51,6 @@ class ScheduleSlotRead(BaseModel):
     def map_room_field(cls, values: object) -> object:
         if not isinstance(values, dict):
             return values
-        if "room_number" not in values and "room" in values:
-            values["room_number"] = values["room"]
+        if "room" not in values and "room" in values:
+            values["room"] = values["room"]
         return values
