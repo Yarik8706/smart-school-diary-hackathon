@@ -1,2 +1,6 @@
 venv
 *.pyc
+# Environment files
+.env
+*.env
+backend/.env
