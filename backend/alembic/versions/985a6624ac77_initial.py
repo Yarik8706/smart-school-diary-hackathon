@@ -79,6 +79,7 @@ def upgrade() -> None:
     sa.Column('remind_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('is_sent', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.ForeignKeyConstraint(['homework_id'], ['homeworks.id'], name=op.f('fk_reminders_homework_id_homeworks'), ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_reminders'))
     )
