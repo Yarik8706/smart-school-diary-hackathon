@@ -15,7 +15,7 @@ class ScheduleSlotBase(BaseModel):
     day_of_week: int | None = Field(default=None, ge=0, le=6, example=1)
     start_time: time | None = Field(default=None, example="09:00:00")
     end_time: time | None = Field(default=None, example="09:45:00")
-    room_number: str | None = Field(default=None, alias="room", example="Кабинет 210")
+    room: str | None = Field(default=None, alias="room", example="Кабинет 210")
 
     @model_validator(mode="after")
     def validate_time_range(self) -> "ScheduleSlotBase":
@@ -44,6 +44,6 @@ class ScheduleSlotRead(BaseModel):
     day_of_week: int
     start_time: time
     end_time: time
-    room_number: str | None = Field(alias="room")
+    room: str | None = Field(alias="room")
     created_at: datetime
     updated_at: datetime
