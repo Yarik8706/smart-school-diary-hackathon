@@ -1,27 +1,29 @@
 ## Functions
 
-- `apiClient.request<T>(endpoint, options)` in `lib/api-client.ts` executes HTTP requests against `NEXT_PUBLIC_API_URL`, normalizes request body/headers, and throws typed API errors.
-- `apiClient.get<T>()` and `apiClient.post<T>()` in `lib/api-client.ts` provide typed convenience wrappers.
-- `useAppStore` in `store/use-app-store.ts` stores a basic readiness flag for initial Zustand wiring.
-- `ProjectHealth` in `components/common/project-health.tsx` renders bootstrap status and demonstrates Zustand + GSAP interaction.
+- `RootLayout` in `app/layout.tsx` applies Inter font, metadata, and wraps all routes into `AppShell`.
+- `AppShell` in `components/layout/app-shell.tsx` composes `Sidebar`, `Header`, and `BottomNav`, maps route titles, and runs GSAP entry animations on navigation.
+- `Sidebar` in `components/layout/sidebar.tsx` renders desktop navigation with active-state highlighting and collapse/expand behavior.
+- `BottomNav` in `components/layout/bottom-nav.tsx` renders fixed mobile navigation with icon + label tabs.
+- `Header` in `components/layout/header.tsx` displays the current page title and action slot with `NotificationBell`.
+- `NotificationBell` in `components/layout/notification-bell.tsx` polls `/api/v1/reminders/pending` every 60 seconds and renders a dropdown with pending reminders.
 
 ## Types
 
-- `ApiRequestOptions` describes typed request options with JSON/FormData body support.
-- `ApiErrorPayload` defines normalized API error shape used by the API client.
-- `AppState` describes the Zustand store contract (`isReady`, `setIsReady`).
+- `NavigationItem` in `components/layout/navigation-config.ts` defines typed navigation records (route, label, icon component).
+- `ReminderItem` and `PendingRemindersResponse` in `components/layout/notification-bell.tsx` define reminder payload structures for polling UI.
+- `pageTitles` in `components/layout/navigation-config.ts` centralizes route-to-title mapping used by the header.
 
 ## Data Flow
 
-1. `app/page.tsx` renders `ProjectHealth`.
-2. `ProjectHealth` reads and updates state via `useAppStore`.
-3. Components can call `apiClient` helpers for backend communication using environment-configured base URL.
-4. Tailwind + shadcn tokens from `app/globals.css` style all UI.
+1. Every route is wrapped by `RootLayout` and rendered inside `AppShell`.
+2. `AppShell` reads pathname from App Router and passes mapped title to `Header`.
+3. `Sidebar` and `BottomNav` reuse `navigationItems` config and compute active items by current pathname.
+4. `NotificationBell` fetches pending reminders via `apiClient.get` and refreshes data on a 60-second interval.
+5. Route pages (`/`, `/schedule`, `/homework`, `/reminders`, `/analytics`, `/materials`) render section-level content inside the shared shell container.
 
 ## Notes
 
-- Frontend scaffold is based on Next.js App Router with TypeScript strict mode.
-- `components/`, `store/`, `lib/`, and `types/` folders are initialized for scalable structure.
-- Prettier is configured with Tailwind plugin to keep utility classes consistently ordered.
-- `.env.local.example` documents required environment variable `NEXT_PUBLIC_API_URL`.
-- App icon uses `app/icon.svg` to avoid binary assets in the repository baseline.
+- `next.config.ts` enables `experimental.turbopackUseSystemTlsCerts` to avoid Google Fonts TLS issues in this environment.
+- `next.config.ts` also sets `allowedDevOrigins` for `127.0.0.1` used by browser-based integration checks.
+- Primary and accent color tokens in `app/globals.css` are shifted to brighter values to match the school-themed UI direction.
+- `@tabler/icons-react` is used for all navigation/action icons to align with project icon rules.
