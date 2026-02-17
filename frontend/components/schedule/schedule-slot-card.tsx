@@ -16,6 +16,13 @@ export default function ScheduleSlotCard({
   onEdit,
   onDelete,
 }: ScheduleSlotCardProps) {
+  const handleDelete = () => {
+    if (!window.confirm("Удалить урок из расписания?")) {
+      return;
+    }
+    onDelete(slot.id);
+  };
+
   return (
     <article className="bg-card focus-within:ring-ring flex h-full min-h-28 flex-col rounded-lg border p-3 shadow-sm focus-within:ring-2">
       <div className="mb-2 flex items-start gap-3">
@@ -27,9 +34,7 @@ export default function ScheduleSlotCard({
           )}
         />
         <div className="space-y-1">
-          <h3 className="text-sm font-semibold">
-            {subject?.name ?? "Без предмета"}
-          </h3>
+          <h3 className="text-sm font-semibold">{subject?.name ?? "Без предмета"}</h3>
           <p className="text-muted-foreground text-xs">
             {slot.start_time} - {slot.end_time}
           </p>
@@ -48,8 +53,8 @@ export default function ScheduleSlotCard({
         <Button
           className="flex-1"
           size="sm"
-          variant="destructive"
-          onClick={() => onDelete(slot.id)}
+          variant="ghost"
+          onClick={handleDelete}
         >
           Удалить
         </Button>

@@ -1,6 +1,7 @@
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
+import { uiText } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import type { ReminderView } from "@/types/reminders";
 
@@ -13,6 +14,11 @@ interface ReminderCardProps {
 const statusClass: Record<ReminderView["status"], string> = {
   pending: "bg-blue-500/20 text-blue-700",
   sent: "bg-zinc-400/20 text-zinc-600",
+};
+
+const statusText: Record<ReminderView["status"], string> = {
+  pending: uiText.reminders.status.pending,
+  sent: uiText.reminders.status.sent,
 };
 
 const subjectDot: Record<string, string> = {
@@ -48,25 +54,26 @@ export function ReminderCard({
             statusClass[reminder.status],
           )}
         >
-          {reminder.status}
+          {statusText[reminder.status]}
         </span>
       </div>
-      <div className="mt-3 flex items-center justify-between">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <p className="inline-flex items-center gap-2 text-sm">
           <span
             className={cn("size-2 rounded-full", markerClass)}
             aria-hidden
           />
-          {reminder.homework?.subject ?? "Неизвестный предмет"}
+          {reminder.homework?.subject ?? uiText.common.noSubject}
         </p>
-        <div className="flex gap-2">
+        <div className="flex w-full flex-wrap justify-end gap-2 sm:w-auto sm:flex-nowrap">
           <Button size="sm" variant="outline" onClick={() => onEdit(reminder)}>
             <IconEdit size={16} /> Редактировать
           </Button>
           <Button
             size="sm"
-            variant="destructive"
+            variant="ghost"
             onClick={() => onDelete(reminder.id)}
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
           >
             <IconTrash size={16} /> Удалить
           </Button>

@@ -1,7 +1,8 @@
 import type { ReminderView } from "@/types/reminders";
+import { uiText } from "@/lib/i18n";
 
 export interface ReminderGroup {
-  key: "today" | "tomorrow" | "week" | "later";
+  key: "overdue" | "today" | "tomorrow" | "week" | "later";
   title: string;
   items: ReminderView[];
 }
@@ -25,28 +26,33 @@ export const groupReminders = (
   const weekEnd = todayStart + dayMs * 7;
 
   const groups: ReminderGroup[] = [
-    { key: "today", title: "Сегодня", items: [] },
-    { key: "tomorrow", title: "Завтра", items: [] },
-    { key: "week", title: "На этой неделе", items: [] },
-    { key: "later", title: "Позднее", items: [] },
+    { key: "overdue", title: uiText.reminders.groups.overdue, items: [] },
+    { key: "today", title: uiText.reminders.groups.today, items: [] },
+    { key: "tomorrow", title: uiText.reminders.groups.tomorrow, items: [] },
+    { key: "week", title: uiText.reminders.groups.week, items: [] },
+    { key: "later", title: uiText.reminders.groups.later, items: [] },
   ];
 
   sortByClosest(reminders).forEach((item) => {
     const reminderTime = new Date(item.remind_at).getTime();
 
-    if (reminderTime < tomorrowStart) {
+    if (reminderTime < todayStart) {
       groups[0].items.push(item);
       return;
     }
-    if (reminderTime < tomorrowStart + dayMs) {
+    if (reminderTime < tomorrowStart) {
       groups[1].items.push(item);
       return;
     }
-    if (reminderTime < weekEnd) {
+    if (reminderTime < tomorrowStart + dayMs) {
       groups[2].items.push(item);
       return;
     }
-    groups[3].items.push(item);
+    if (reminderTime < weekEnd) {
+      groups[3].items.push(item);
+      return;
+    }
+    groups[4].items.push(item);
   });
 
   return groups.filter((group) => group.items.length > 0);

@@ -18,7 +18,7 @@ export function HomeworkFilters({
 
   return (
     <section
-      className="grid gap-3 sm:grid-cols-3"
+      className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
       aria-label="Фильтры домашних заданий"
     >
       <label className="space-y-1 text-sm font-medium">
@@ -55,7 +55,7 @@ export function HomeworkFilters({
           <option value="active">Не выполнено</option>
         </select>
       </label>
-      <label className="space-y-1 text-sm font-medium">
+      <label className="space-y-1 text-sm font-medium sm:col-span-2 lg:col-span-1">
         Дедлайн
         <select
           aria-label="Дедлайн"

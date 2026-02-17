@@ -30,6 +30,7 @@ describe("reminder-utils", () => {
   it("groups reminders by relative day ranges", () => {
     const now = new Date("2026-01-01T08:00:00.000Z");
     const reminders = [
+      makeReminder("overdue", "2025-12-31T23:00:00.000Z"),
       makeReminder("today", "2026-01-01T12:00:00.000Z"),
       makeReminder("tomorrow", "2026-01-02T12:00:00.000Z"),
       makeReminder("week", "2026-01-05T12:00:00.000Z"),
@@ -39,6 +40,7 @@ describe("reminder-utils", () => {
     const groups = groupReminders(reminders, now);
 
     expect(groups.map((group) => group.key)).toEqual([
+      "overdue",
       "today",
       "tomorrow",
       "week",

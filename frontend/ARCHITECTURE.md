@@ -119,3 +119,15 @@
 - `lib/mock-data.ts`, `lib/mock-api-routes.ts`, and `lib/mock-api-client.ts` provide in-memory mock payloads and CRUD behavior for subjects, schedule, homework, reminders, analytics, and pending reminder polling.
 - `lib/api-client.ts` exports `api`, switching between `apiClient` and `mockApiClient` via `NEXT_PUBLIC_USE_MOCK`.
 - `store/schedule.ts`, `store/homework.ts`, `store/reminders.ts`, `store/analytics.ts`, and `components/layout/notification-bell.tsx` consume `api` to support both live backend and mock mode without changing feature code.
+
+## Notes (2026-02-17 frontend fixes)
+
+- Added `uiText` dictionary in `lib/i18n.ts` to centralize RU labels for common UI text and reminder statuses/group titles.
+- `groupReminders` now supports an additional `overdue` bucket and keeps ordering `Просрочено → Сегодня → Завтра → На этой неделе → Позднее`.
+- Reminder cards now use localized status labels, fallback `Без предмета`, and wrapped actions so mobile destructive action does not overflow card bounds.
+- Schedule desktop grid now renders without forced horizontal scrolling (`min-w-[980px]` removed), while mobile day tabs support overflow with non-breaking labels.
+- Schedule slot deletion now asks for explicit confirmation and uses lower-emphasis destructive action style.
+- Dashboard cards were visually rebalanced: “Фокус дня” and “Быстрые действия” are now closer in visual weight, and quick actions include Tabler icons.
+- Homework card action hierarchy updated (`Оценить сложность` moved to ghost style), completion indicator simplified to a single checkbox mode.
+- Homework filters now keep equal full-width controls and shift to a balanced two-row layout on smaller screens.
+- Analytics warnings received tone-based styling (`warning`/`danger`/`info`) to reduce always-red emphasis.

@@ -5,6 +5,7 @@ import { IconBellPlus } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 import { useReminderStore } from "@/store/reminders";
+import { uiText } from "@/lib/i18n";
 import type { ReminderView } from "@/types/reminders";
 
 import { ReminderEditModal } from "./reminder-edit-modal";
@@ -73,7 +74,7 @@ export function RemindersPageClient() {
         </p>
       ) : null}
       {isLoading ? (
-        <p className="text-muted-foreground text-sm">Загрузка...</p>
+        <p className="text-muted-foreground text-sm">{uiText.common.loading}</p>
       ) : null}
       <ReminderList
         reminders={reminderViews}
