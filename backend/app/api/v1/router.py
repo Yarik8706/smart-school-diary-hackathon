@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.v1.health import router as health_router
+from app.routers.analytics import router as analytics_router
 from app.routers.homework import router as homework_router
 from app.routers.mood import router as mood_router
 from app.routers.reminders import router as reminders_router
@@ -14,3 +15,5 @@ api_router.include_router(schedule_router)
 api_router.include_router(reminders_router)
 api_router.include_router(homework_router)
 api_router.include_router(mood_router)
+
+api_router.include_router(analytics_router)
