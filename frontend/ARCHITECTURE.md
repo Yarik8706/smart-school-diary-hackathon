@@ -82,3 +82,30 @@
 
 - Unit/component tests for reminders are implemented with Vitest + Testing Library in `components/reminders/__tests__` and `store/__tests__/reminders.test.ts`.
 - Playwright integration coverage for `/reminders` lives in `tests/reminders.spec.ts`; browser execution in this container may require additional system libraries.
+
+## Functions
+
+- `AnalyticsPage` in `app/analytics/page.tsx` renders `AnalyticsPageClient` as the `/analytics` route entry point.
+- `AnalyticsPageClient` in `components/analytics/analytics-page-client.tsx` fetches weekly load, mood statistics, and warnings on mount, then renders loading/error states and analytics widgets.
+- `WeekLoadChart` in `components/analytics/week-load-chart.tsx` renders a horizontal weekly load chart with threshold-based color coding and legend.
+- `MoodStatsCard` in `components/analytics/mood-stats-card.tsx` renders easy/normal/hard counts with percentage breakdown.
+- `WarningsList` in `components/analytics/warnings-list.tsx` renders overload warnings and recommendations with empty-state fallback.
+- `useAnalyticsStore` in `store/analytics.ts` manages analytics API calls and loading/error states for load, mood stats, and warnings.
+
+## Types
+
+- `WeekLoadDay`, `WeekLoadAnalysis`, `MoodStats`, and `WarningItem` in `types/analytics.ts` define the analytics domain model.
+- `AnalyticsStore` in `store/analytics.ts` defines Zustand state contract and async fetch actions for analytics endpoints.
+
+## Data Flow
+
+1. `AnalyticsPage` mounts `AnalyticsPageClient` for `/analytics`.
+2. On mount, `AnalyticsPageClient` triggers `fetchWeekLoad()`, `fetchMoodStats()`, and `fetchWarnings()` from `useAnalyticsStore`.
+3. `useAnalyticsStore` requests `/api/v1/analytics/load`, `/api/v1/mood/stats`, and `/api/v1/analytics/warnings` through `apiClient`.
+4. Store state updates flow to `WeekLoadChart`, `MoodStatsCard`, and `WarningsList` for rendering chart data, stats, and recommendations.
+5. Shared loading/error state is displayed at page level to preserve UI consistency across all analytics widgets.
+
+## Notes
+
+- Unit tests for analytics store and UI widgets are in `store/__tests__/analytics.test.ts` and `components/analytics/__tests__`.
+- Playwright integration coverage for analytics route is in `tests/analytics.spec.ts`.
