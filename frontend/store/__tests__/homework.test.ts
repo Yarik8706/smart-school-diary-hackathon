@@ -9,6 +9,7 @@ const { mockedApi } = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/api-client", () => ({
+  api: mockedApi,
   apiClient: mockedApi,
 }));
 

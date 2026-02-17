@@ -32,7 +32,7 @@ export default function ScheduleGrid({
 
   return (
     <section className="space-y-4">
-      <div className="flex flex-wrap gap-2 md:hidden">
+      <div className="grid grid-cols-5 gap-1 md:hidden">
         {WEEK_DAYS.map((day) => (
           <Button
             key={day.value}
@@ -45,7 +45,7 @@ export default function ScheduleGrid({
         ))}
       </div>
 
-      <div className="grid gap-4 md:hidden">
+      <div className="grid gap-3 md:hidden">
         {selectedDaySlots.map((slot) => (
           <ScheduleSlotCard
             key={slot.id}

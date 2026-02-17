@@ -42,7 +42,7 @@ export default function AppShell({ children }: AppShellProps) {
   const pageTitle = pageTitles[pathname] ?? "Раздел";
 
   return (
-    <div className="bg-muted/30 flex min-h-screen">
+    <div className="bg-muted/30 flex min-h-dvh">
       <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((prev) => !prev)} />
       <div className="flex w-full flex-col">
         <main ref={mainRef} className="flex-1 px-4 py-4 pb-24 md:px-8 md:py-8 md:pb-8">

@@ -109,3 +109,13 @@
 
 - Unit/component TDD coverage for homework is implemented in `store/__tests__/homework.test.ts`, `components/homework/__tests__/homework-edit-modal.test.tsx`, and `components/homework/__tests__/homework-filters.test.tsx`.
 - Playwright smoke scenario for `/homework` lives in `tests/homework.spec.ts`.
+
+## Notes (Update: modal overlay + mock API)
+
+- `components/common/modal-overlay.tsx` introduces a shared portal-based modal wrapper with body scroll lock, Escape close handling, focus-first behavior, and GSAP open/close transitions.
+- `HomeworkEditModal`, `ReminderEditModal`, `MoodPicker`, `ScheduleForm`, and `SubjectManager` now render modal content through `ModalOverlay`, so dimming covers the full viewport beyond `AppShell` rounded containers.
+- `components/layout/app-shell.tsx` uses `min-h-dvh`, and `components/layout/bottom-nav.tsx` raises mobile nav stacking to `z-50` for improved visibility during mobile browser viewport changes.
+- `components/schedule/schedule-page-client.tsx` and `components/schedule/schedule-grid.tsx` apply tighter mobile spacing, responsive headline sizing, and a 5-column day selector grid for compact screens.
+- `lib/mock-data.ts`, `lib/mock-api-routes.ts`, and `lib/mock-api-client.ts` provide in-memory mock payloads and CRUD behavior for subjects, schedule, homework, reminders, analytics, and pending reminder polling.
+- `lib/api-client.ts` exports `api`, switching between `apiClient` and `mockApiClient` via `NEXT_PUBLIC_USE_MOCK`.
+- `store/schedule.ts`, `store/homework.ts`, `store/reminders.ts`, `store/analytics.ts`, and `components/layout/notification-bell.tsx` consume `api` to support both live backend and mock mode without changing feature code.

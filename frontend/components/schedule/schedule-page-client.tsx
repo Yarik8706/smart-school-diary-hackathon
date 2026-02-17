@@ -53,16 +53,16 @@ export default function SchedulePageClient() {
   };
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-6 py-10">
+    <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-6 md:px-6 md:py-10">
       <header className="space-y-3">
         <p className="text-primary text-xs font-semibold tracking-[0.2em] uppercase">
           расписание
         </p>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-4xl font-bold tracking-tight">
+          <h1 className="text-2xl font-bold tracking-tight md:text-4xl">
             Расписание уроков
           </h1>
-          <div className="flex gap-2">
+          <div className="flex w-full gap-2 md:w-auto">
             <Button variant="outline" onClick={() => setIsSubjectsOpen(true)}>
               Управление предметами
             </Button>

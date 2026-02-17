@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import ModalOverlay from "@/components/common/modal-overlay";
 import { Button } from "@/components/ui/button";
 import type { MoodLevel } from "@/types/homework";
 
@@ -36,8 +37,8 @@ export function MoodPicker({
   };
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
-      <div className="bg-background w-full max-w-md space-y-4 rounded-xl border p-6">
+    <ModalOverlay open={open} onClose={onClose} className="max-w-md">
+      <div className="bg-background w-full space-y-4 rounded-xl border p-6">
         <h3 className="text-xl font-black">
           Оценка сложности: {homeworkTitle}
         </h3>
@@ -70,7 +71,7 @@ export function MoodPicker({
           </Button>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
 

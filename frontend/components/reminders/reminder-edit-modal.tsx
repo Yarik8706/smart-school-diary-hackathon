@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 
+import ModalOverlay from "@/components/common/modal-overlay";
 import { Button } from "@/components/ui/button";
 import type { Homework, ReminderView } from "@/types/reminders";
 
@@ -55,9 +56,9 @@ export function ReminderEditModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
+    <ModalOverlay open={open} onClose={onClose} className="max-w-md">
       <form
-        className="bg-background w-full max-w-md space-y-4 rounded-xl border p-6"
+        className="bg-background w-full space-y-4 rounded-xl border p-6"
         onSubmit={handleSubmit}
       >
         <h3 className="text-xl font-black">
@@ -97,7 +98,7 @@ export function ReminderEditModal({
           </Button>
         </div>
       </form>
-    </div>
+    </ModalOverlay>
   );
 }
 

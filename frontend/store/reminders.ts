@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { apiClient } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
 import type {
   Homework,
   Reminder,
@@ -31,7 +31,7 @@ export const useReminderStore = create<ReminderStore>((set, get) => ({
   fetchReminders: async () => {
     set({ isLoading: true });
     try {
-      const reminders = await apiClient.get<Reminder[]>(reminderPath);
+      const reminders = await api.get<Reminder[]>(reminderPath);
       set({ reminders, error: null });
     } catch {
       set({ error: "Не удалось загрузить напоминания." });
@@ -41,25 +41,25 @@ export const useReminderStore = create<ReminderStore>((set, get) => ({
   },
   fetchHomework: async () => {
     try {
-      const homework = await apiClient.get<Homework[]>(homeworkPath);
+      const homework = await api.get<Homework[]>(homeworkPath);
       set({ homework, error: null });
     } catch {
       set({ error: "Не удалось загрузить домашние задания." });
     }
   },
   addReminder: async (reminder) => {
-    await apiClient.post<Reminder>(reminderPath, reminder);
+    await api.post<Reminder>(reminderPath, reminder);
     await get().fetchReminders();
   },
   updateReminder: async (id, reminder) => {
-    await apiClient.request<Reminder>(`${reminderPath}/${id}`, {
+    await api.request<Reminder>(`${reminderPath}/${id}`, {
       method: "PUT",
       body: reminder,
     });
     await get().fetchReminders();
   },
   deleteReminder: async (id) => {
-    await apiClient.request<void>(`${reminderPath}/${id}`, {
+    await api.request<void>(`${reminderPath}/${id}`, {
       method: "DELETE",
     });
     await get().fetchReminders();
