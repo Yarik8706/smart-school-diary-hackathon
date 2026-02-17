@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.homework import HomeworkRead
 
@@ -12,9 +12,9 @@ MoodValue = Literal["easy", "normal", "hard"]
 
 
 class MoodEntryCreate(BaseModel):
-    homework_id: uuid.UUID
-    mood: MoodValue
-    note: str | None = None
+    homework_id: uuid.UUID = Field(example="f803c5b5-b608-4642-8127-48908f8da821")
+    mood: MoodValue = Field(example="normal")
+    note: str | None = Field(default=None, example="Задание средней сложности")
 
 
 class MoodEntryRead(BaseModel):
