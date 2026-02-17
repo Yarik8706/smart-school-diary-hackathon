@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { apiClient } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
 import type {
   Homework,
   HomeworkCreate,
@@ -49,7 +49,7 @@ export const useHomeworkStore = create<HomeworkStore>((set, get) => ({
   fetchHomework: async (filters) => {
     set({ isLoading: true });
     try {
-      const homework = await apiClient.get<Homework[]>(
+      const homework = await api.get<Homework[]>(
         `${homeworkPath}${makeQuery(filters)}`,
       );
       set({ homework, error: null });
@@ -61,37 +61,37 @@ export const useHomeworkStore = create<HomeworkStore>((set, get) => ({
   },
   fetchSubjects: async () => {
     try {
-      const subjects = await apiClient.get<Subject[]>(subjectsPath);
+      const subjects = await api.get<Subject[]>(subjectsPath);
       set({ subjects, error: null });
     } catch {
       set({ error: "Не удалось загрузить предметы." });
     }
   },
   addHomework: async (hw) => {
-    await apiClient.post<Homework>(homeworkPath, hw);
+    await api.post<Homework>(homeworkPath, hw);
     await get().fetchHomework();
   },
   updateHomework: async (id, hw) => {
-    await apiClient.request<Homework>(`${homeworkPath}/${id}`, {
+    await api.request<Homework>(`${homeworkPath}/${id}`, {
       method: "PUT",
       body: hw,
     });
     await get().fetchHomework();
   },
   deleteHomework: async (id) => {
-    await apiClient.request<void>(`${homeworkPath}/${id}`, {
+    await api.request<void>(`${homeworkPath}/${id}`, {
       method: "DELETE",
     });
     await get().fetchHomework();
   },
   toggleComplete: async (id) => {
-    await apiClient.request<void>(`${homeworkPath}/${id}/complete`, {
+    await api.request<void>(`${homeworkPath}/${id}/complete`, {
       method: "PATCH",
     });
     await get().fetchHomework();
   },
   submitMood: async (homeworkId, mood, note) => {
-    await apiClient.post("/api/v1/mood", {
+    await api.post("/api/v1/mood", {
       homework_id: homeworkId,
       mood,
       note,

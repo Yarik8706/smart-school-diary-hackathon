@@ -6,6 +6,7 @@ import {
   SUBJECT_COLORS,
   getSubjectColorClass,
 } from "@/components/schedule/constants";
+import ModalOverlay from "@/components/common/modal-overlay";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Subject } from "@/types/schedule";
@@ -50,12 +51,8 @@ export default function SubjectManager({
   };
 
   return (
-    <div
-      aria-modal
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      role="dialog"
-    >
-      <section className="bg-background w-full max-w-2xl space-y-4 rounded-xl p-6">
+    <ModalOverlay open={isOpen} onClose={onClose} className="max-w-2xl">
+      <section className="bg-background w-full space-y-4 rounded-xl p-6">
         <h2 className="text-2xl font-semibold">Управление предметами</h2>
         <div className="grid gap-3 md:grid-cols-[1fr_180px_auto]">
           <input
@@ -119,6 +116,6 @@ export default function SubjectManager({
           </Button>
         </div>
       </section>
-    </div>
+    </ModalOverlay>
   );
 }

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { IconBell } from "@tabler/icons-react";
 
-import { apiClient } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 
 interface ReminderItem {
@@ -29,7 +29,7 @@ export default function NotificationBell() {
     const loadReminders = async () => {
       try {
         setError(null);
-        const payload = await apiClient.get<PendingRemindersResponse>(
+        const payload = await api.get<PendingRemindersResponse>(
           "/api/v1/reminders/pending",
           { cache: "no-store" },
         );

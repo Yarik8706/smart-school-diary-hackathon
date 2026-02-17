@@ -13,7 +13,7 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed right-0 bottom-0 left-0 z-40 border-t border-border/70 bg-card/95 px-2 py-2 backdrop-blur md:hidden"
+      className="fixed right-0 bottom-0 left-0 z-50 border-t border-border/70 bg-card/95 px-2 py-2 backdrop-blur md:hidden"
       aria-label="Мобильная навигация"
     >
       <ul className="grid grid-cols-5 gap-1">

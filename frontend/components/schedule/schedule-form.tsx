@@ -7,6 +7,7 @@ import {
   buildInitialSlotValues,
   hasSlotOverlap,
 } from "@/components/schedule/schedule-form-helpers";
+import ModalOverlay from "@/components/common/modal-overlay";
 import { Button } from "@/components/ui/button";
 import type {
   ScheduleSlot,
@@ -65,13 +66,9 @@ export default function ScheduleForm({
   };
 
   return (
-    <div
-      aria-modal
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      role="dialog"
-    >
+    <ModalOverlay open={isOpen} onClose={onClose} className="max-w-lg">
       <form
-        className="bg-background w-full max-w-lg space-y-4 rounded-xl p-6"
+        className="bg-background w-full space-y-4 rounded-xl p-6"
         onSubmit={handleSubmit}
       >
         <h2 className="text-2xl font-semibold">
@@ -145,6 +142,6 @@ export default function ScheduleForm({
           </Button>
         </div>
       </form>
-    </div>
+    </ModalOverlay>
   );
 }

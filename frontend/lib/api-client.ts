@@ -1,3 +1,4 @@
+import { mockApiClient } from "@/lib/mock-api-client";
 import type { ApiErrorPayload, ApiRequestOptions } from "@/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -76,3 +77,8 @@ export const apiClient = {
     return this.request<T>(endpoint, { ...options, method: "POST", body });
   },
 };
+
+
+const useMock = process.env.NEXT_PUBLIC_USE_MOCK === "true";
+
+export const api = useMock ? mockApiClient : apiClient;

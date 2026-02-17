@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { apiClient } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
 import type { MoodStats, WarningItem, WeekLoadAnalysis } from "@/types/analytics";
 
 interface AnalyticsStore {
@@ -27,7 +27,7 @@ export const useAnalyticsStore = create<AnalyticsStore>((set) => ({
   fetchWeekLoad: async () => {
     set({ isLoadingWeekLoad: true });
     try {
-      const weekLoad = await apiClient.get<WeekLoadAnalysis>("/api/v1/analytics/load");
+      const weekLoad = await api.get<WeekLoadAnalysis>("/api/v1/analytics/load");
       set({ weekLoad, error: null });
     } catch {
       set({ error: "Не удалось загрузить аналитику нагрузки." });
@@ -38,7 +38,7 @@ export const useAnalyticsStore = create<AnalyticsStore>((set) => ({
   fetchMoodStats: async () => {
     set({ isLoadingMoodStats: true });
     try {
-      const moodStats = await apiClient.get<MoodStats>("/api/v1/mood/stats");
+      const moodStats = await api.get<MoodStats>("/api/v1/mood/stats");
       set({ moodStats, error: null });
     } catch {
       set({ error: "Не удалось загрузить статистику настроения." });
@@ -49,7 +49,7 @@ export const useAnalyticsStore = create<AnalyticsStore>((set) => ({
   fetchWarnings: async () => {
     set({ isLoadingWarnings: true });
     try {
-      const warnings = await apiClient.get<WarningItem[]>("/api/v1/analytics/warnings");
+      const warnings = await api.get<WarningItem[]>("/api/v1/analytics/warnings");
       set({ warnings, error: null });
     } catch {
       set({ error: "Не удалось загрузить предупреждения." });

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { apiClient } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
 import type {
   ScheduleSlot,
   ScheduleSlotCreate,
@@ -48,7 +48,7 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     await withLoading(
       async () => {
         try {
-          const subjects = await apiClient.get<Subject[]>(subjectPath);
+          const subjects = await api.get<Subject[]>(subjectPath);
           set({ subjects, error: null });
         } catch {
           set({ error: "Не удалось загрузить предметы." });
@@ -63,7 +63,7 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     await withLoading(
       async () => {
         try {
-          const schedule = await apiClient.get<ScheduleSlot[]>(schedulePath);
+          const schedule = await api.get<ScheduleSlot[]>(schedulePath);
           set({ schedule, error: null });
         } catch {
           set({ error: "Не удалось загрузить расписание." });
@@ -75,33 +75,33 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     );
   },
   createSubject: async (data) => {
-    await apiClient.post<Subject>(subjectPath, data);
+    await api.post<Subject>(subjectPath, data);
     await get().fetchSubjects();
   },
   updateSubject: async (id, data) => {
-    await apiClient.request<Subject>(`${subjectPath}/${id}`, {
+    await api.request<Subject>(`${subjectPath}/${id}`, {
       method: "PUT",
       body: data,
     });
     await get().fetchSubjects();
   },
   deleteSubject: async (id) => {
-    await apiClient.request<void>(`${subjectPath}/${id}`, { method: "DELETE" });
+    await api.request<void>(`${subjectPath}/${id}`, { method: "DELETE" });
     await Promise.all([get().fetchSubjects(), get().fetchSchedule()]);
   },
   createSlot: async (data) => {
-    await apiClient.post<ScheduleSlot>(schedulePath, data);
+    await api.post<ScheduleSlot>(schedulePath, data);
     await get().fetchSchedule();
   },
   updateSlot: async (id, data) => {
-    await apiClient.request<ScheduleSlot>(`${schedulePath}/${id}`, {
+    await api.request<ScheduleSlot>(`${schedulePath}/${id}`, {
       method: "PUT",
       body: data,
     });
     await get().fetchSchedule();
   },
   deleteSlot: async (id) => {
-    await apiClient.request<void>(`${schedulePath}/${id}`, {
+    await api.request<void>(`${schedulePath}/${id}`, {
       method: "DELETE",
     });
     await get().fetchSchedule();
