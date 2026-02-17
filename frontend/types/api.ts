@@ -1,5 +1,5 @@
 export interface ApiRequestOptions extends Omit<RequestInit, "body"> {
-  body?: Record<string, unknown> | FormData;
+  body?: BodyInit | Record<string, unknown> | unknown;
 }
 
 export interface ApiErrorPayload {
