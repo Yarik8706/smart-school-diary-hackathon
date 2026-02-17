@@ -7,8 +7,8 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class SubjectBase(BaseModel):
-    name: str | None = Field(default=None, min_length=1)
-    color: str | None = None
+    name: str | None = Field(default=None, min_length=1, example="Математика")
+    color: str | None = Field(default=None, example="#FF5733")
 
     @field_validator("name")
     @classmethod
@@ -22,7 +22,7 @@ class SubjectBase(BaseModel):
 
 
 class SubjectCreate(SubjectBase):
-    name: str = Field(min_length=1)
+    name: str = Field(min_length=1, example="Математика")
 
 
 class SubjectUpdate(SubjectBase):

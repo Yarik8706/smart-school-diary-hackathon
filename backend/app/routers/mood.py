@@ -15,6 +15,7 @@ router = APIRouter(prefix="/v1/mood", tags=["mood"])
 
 @router.post("", response_model=MoodEntryRead, status_code=status.HTTP_201_CREATED)
 async def create_mood_entry(payload: MoodEntryCreate, db: AsyncSession = Depends(get_db)) -> MoodEntryRead:
+    """Добавить запись о сложности выполнения домашнего задания."""
     try:
         mood_entry = await mood_crud.create_mood_entry(db, payload)
     except mood_crud.HomeworkNotFoundError as err:
@@ -30,10 +31,12 @@ async def list_mood_entries(
     subject_id: uuid.UUID | None = Query(default=None),
     db: AsyncSession = Depends(get_db),
 ) -> list[MoodEntryRead]:
+    """Получить журнал записей настроения с фильтрами по дате и предмету."""
     items = await mood_crud.list_mood_entries(db, date_from=date_from, date_to=date_to, subject_id=subject_id)
     return [MoodEntryRead.model_validate(item) for item in items]
 
 
 @router.get("/stats", response_model=MoodStats)
 async def get_mood_stats(db: AsyncSession = Depends(get_db)) -> MoodStats:
+    """Получить агрегированную статистику настроения по всем записям."""
     return await mood_crud.get_mood_stats(db)

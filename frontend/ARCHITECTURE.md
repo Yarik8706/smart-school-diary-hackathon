@@ -82,30 +82,30 @@
 
 - Unit/component tests for reminders are implemented with Vitest + Testing Library in `components/reminders/__tests__` and `store/__tests__/reminders.test.ts`.
 - Playwright integration coverage for `/reminders` lives in `tests/reminders.spec.ts`; browser execution in this container may require additional system libraries.
-
-## Functions
-
-- `AnalyticsPage` in `app/analytics/page.tsx` renders `AnalyticsPageClient` as the `/analytics` route entry point.
-- `AnalyticsPageClient` in `components/analytics/analytics-page-client.tsx` fetches weekly load, mood statistics, and warnings on mount, then renders loading/error states and analytics widgets.
-- `WeekLoadChart` in `components/analytics/week-load-chart.tsx` renders a horizontal weekly load chart with threshold-based color coding and legend.
-- `MoodStatsCard` in `components/analytics/mood-stats-card.tsx` renders easy/normal/hard counts with percentage breakdown.
-- `WarningsList` in `components/analytics/warnings-list.tsx` renders overload warnings and recommendations with empty-state fallback.
-- `useAnalyticsStore` in `store/analytics.ts` manages analytics API calls and loading/error states for load, mood stats, and warnings.
+- `HomeworkPage` in `app/homework/page.tsx` mounts `HomeworkPageClient` for the `/homework` route.
+- `HomeworkPageClient` in `components/homework/homework-page-client.tsx` orchestrates loading homework/subjects, client-side filters, and modal flows for create/edit/mood actions.
+- `HomeworkFilters` in `components/homework/homework-filters.tsx` exposes subject/status/deadline selectors and emits normalized filter state.
+- `HomeworkList` in `components/homework/homework-list.tsx` renders responsive homework cards and applies GSAP enter animation for card changes.
+- `HomeworkCard` in `components/homework/homework-card.tsx` shows subject tag, completion state, overdue highlight, and actions for edit/delete/complexity rating.
+- `HomeworkEditModal` in `components/homework/homework-edit-modal.tsx` validates title/deadline and handles add/update payload submission.
+- `MoodPicker` in `components/homework/mood-picker.tsx` submits difficulty (`easy`/`normal`/`hard`) with optional note.
+- `filterHomework`, `sortByDeadline`, `getStepsProgress`, and `isPastDeadline` in `components/homework/homework-utils.ts` provide filtering/sorting/progress and overdue helpers.
+- `useHomeworkStore` in `store/homework.ts` integrates `/api/v1/homework`, `/api/v1/subjects`, and `/api/v1/mood` endpoints through Zustand actions.
 
 ## Types
 
-- `WeekLoadDay`, `WeekLoadAnalysis`, `MoodStats`, and `WarningItem` in `types/analytics.ts` define the analytics domain model.
-- `AnalyticsStore` in `store/analytics.ts` defines Zustand state contract and async fetch actions for analytics endpoints.
+- `Homework`, `HomeworkCreate`, `HomeworkUpdate`, `HomeworkFiltersState`, `Subject`, and `MoodLevel` in `types/homework.ts` define homework domain + filter contracts.
+- `HomeworkStore` in `store/homework.ts` defines Zustand state/actions for CRUD, completion toggle, and mood submission.
 
 ## Data Flow
 
-1. `AnalyticsPage` mounts `AnalyticsPageClient` for `/analytics`.
-2. On mount, `AnalyticsPageClient` triggers `fetchWeekLoad()`, `fetchMoodStats()`, and `fetchWarnings()` from `useAnalyticsStore`.
-3. `useAnalyticsStore` requests `/api/v1/analytics/load`, `/api/v1/mood/stats`, and `/api/v1/analytics/warnings` through `apiClient`.
-4. Store state updates flow to `WeekLoadChart`, `MoodStatsCard`, and `WarningsList` for rendering chart data, stats, and recommendations.
-5. Shared loading/error state is displayed at page level to preserve UI consistency across all analytics widgets.
+1. `/homework` renders `HomeworkPageClient`, which fetches homework and subject dictionaries on mount.
+2. Store actions call API endpoints and refresh homework list after create/update/delete/toggle mutations.
+3. `HomeworkFilters` updates local filter state; `filterHomework` + `sortByDeadline` derive visible cards.
+4. `HomeworkEditModal` and `MoodPicker` submit payloads through store actions and close on success.
+5. `HomeworkList` resolves subject metadata per card and animates card set changes with GSAP.
 
 ## Notes
 
-- Unit tests for analytics store and UI widgets are in `store/__tests__/analytics.test.ts` and `components/analytics/__tests__`.
-- Playwright integration coverage for analytics route is in `tests/analytics.spec.ts`.
+- Unit/component TDD coverage for homework is implemented in `store/__tests__/homework.test.ts`, `components/homework/__tests__/homework-edit-modal.test.tsx`, and `components/homework/__tests__/homework-filters.test.tsx`.
+- Playwright smoke scenario for `/homework` lives in `tests/homework.spec.ts`.

@@ -9,11 +9,13 @@ from app.schemas.subject import SubjectRead
 
 
 class ScheduleSlotBase(BaseModel):
-    subject_id: uuid.UUID | None = None
-    day_of_week: int | None = Field(default=None, ge=0, le=6)
-    start_time: time | None = None
-    end_time: time | None = None
-    room_number: str | None = None
+    model_config = ConfigDict(populate_by_name=True)
+
+    subject_id: uuid.UUID | None = Field(default=None, example="9efbcad1-5604-4cd3-85e2-c3c74ef7de47")
+    day_of_week: int | None = Field(default=None, ge=0, le=6, example=1)
+    start_time: time | None = Field(default=None, example="09:00:00")
+    end_time: time | None = Field(default=None, example="09:45:00")
+    room_number: str | None = Field(default=None, alias="room", example="Кабинет 210")
 
     @model_validator(mode="after")
     def validate_time_range(self) -> "ScheduleSlotBase":
@@ -23,10 +25,10 @@ class ScheduleSlotBase(BaseModel):
 
 
 class ScheduleSlotCreate(ScheduleSlotBase):
-    subject_id: uuid.UUID
-    day_of_week: int = Field(ge=0, le=6)
-    start_time: time
-    end_time: time
+    subject_id: uuid.UUID = Field(example="9efbcad1-5604-4cd3-85e2-c3c74ef7de47")
+    day_of_week: int = Field(ge=0, le=6, example=1)
+    start_time: time = Field(example="09:00:00")
+    end_time: time = Field(example="09:45:00")
 
 
 class ScheduleSlotUpdate(ScheduleSlotBase):
@@ -34,7 +36,7 @@ class ScheduleSlotUpdate(ScheduleSlotBase):
 
 
 class ScheduleSlotRead(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
     id: uuid.UUID
     subject_id: uuid.UUID
@@ -42,15 +44,6 @@ class ScheduleSlotRead(BaseModel):
     day_of_week: int
     start_time: time
     end_time: time
-    room_number: str | None
+    room_number: str | None = Field(alias="room")
     created_at: datetime
     updated_at: datetime
-
-    @model_validator(mode="before")
-    @classmethod
-    def map_room_field(cls, values: object) -> object:
-        if not isinstance(values, dict):
-            return values
-        if "room_number" not in values and "room" in values:
-            values["room_number"] = values["room"]
-        return values

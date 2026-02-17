@@ -19,11 +19,11 @@ class HomeworkStepRead(BaseModel):
 
 
 class HomeworkBase(BaseModel):
-    subject_id: uuid.UUID | None = None
-    title: str | None = Field(default=None, min_length=1)
-    description: str | None = None
-    deadline: date | None = None
-    is_completed: bool | None = None
+    subject_id: uuid.UUID | None = Field(default=None, example="9efbcad1-5604-4cd3-85e2-c3c74ef7de47")
+    title: str | None = Field(default=None, min_length=1, example="Решить задачи №1-10")
+    description: str | None = Field(default=None, example="Параграф 5, упражнения после темы")
+    deadline: date | None = Field(default=None, example="2026-02-02")
+    is_completed: bool | None = Field(default=None, example=False)
 
     @field_validator("title")
     @classmethod
@@ -37,9 +37,9 @@ class HomeworkBase(BaseModel):
 
 
 class HomeworkCreate(HomeworkBase):
-    subject_id: uuid.UUID
-    title: str = Field(min_length=1)
-    deadline: date
+    subject_id: uuid.UUID = Field(example="9efbcad1-5604-4cd3-85e2-c3c74ef7de47")
+    title: str = Field(min_length=1, example="Решить задачи №1-10")
+    deadline: date = Field(example="2026-02-02")
 
     @field_validator("deadline")
     @classmethod

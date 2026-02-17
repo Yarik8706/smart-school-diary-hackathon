@@ -3,14 +3,14 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.schemas.homework import HomeworkRead
 
 
 class ReminderCreate(BaseModel):
-    homework_id: uuid.UUID
-    remind_at: datetime
+    homework_id: uuid.UUID = Field(example="f803c5b5-b608-4642-8127-48908f8da821")
+    remind_at: datetime = Field(example="2026-02-01T18:00:00Z")
 
     @field_validator("remind_at")
     @classmethod
@@ -22,7 +22,7 @@ class ReminderCreate(BaseModel):
 
 
 class ReminderUpdate(BaseModel):
-    remind_at: datetime | None = None
+    remind_at: datetime | None = Field(default=None, example="2026-02-01T20:00:00Z")
 
 
 class ReminderRead(BaseModel):
