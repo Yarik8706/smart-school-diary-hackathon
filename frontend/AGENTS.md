@@ -6,7 +6,6 @@
 
 ## Запреты
 
-- **НИКОГДА не изменяй `.gitlab-ci.yml`.**
 - Нет inline-стилей, styled-components, CSS-in-JS — только Tailwind CSS. При рефакторинге переводи в Tailwind.
 - Нет emojis в коде — заменяй на @tabler/icons.
 - Нет lucide-react и других icon-библиотек — только @tabler/icons.
