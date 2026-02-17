@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, time
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, model_validator
 
 from app.schemas.subject import SubjectRead
 
@@ -15,7 +15,13 @@ class ScheduleSlotBase(BaseModel):
     day_of_week: int | None = Field(default=None, ge=0, le=6, example=1)
     start_time: time | None = Field(default=None, example="09:00:00")
     end_time: time | None = Field(default=None, example="09:45:00")
-    room: str | None = Field(default=None, alias="room", example="Кабинет 210")
+    room_number: str | None = Field(
+        default=None,
+        alias="room",
+        validation_alias=AliasChoices("room", "room_number"),
+        serialization_alias="room_number",
+        example="Кабинет 210",
+    )
 
     @model_validator(mode="after")
     def validate_time_range(self) -> "ScheduleSlotBase":
@@ -44,6 +50,10 @@ class ScheduleSlotRead(BaseModel):
     day_of_week: int
     start_time: time
     end_time: time
-    room: str | None = Field(alias="room")
+    room_number: str | None = Field(
+        alias="room",
+        validation_alias=AliasChoices("room", "room_number"),
+        serialization_alias="room_number",
+    )
     created_at: datetime
     updated_at: datetime
