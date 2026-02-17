@@ -120,7 +120,27 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield !important;
+  /* Firefox */
+}
+
+input {
+  cursor: text !important;
+}
+
+button {
+  cursor: pointer !important;
 }
