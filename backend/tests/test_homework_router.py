@@ -8,9 +8,12 @@ import pytest
 from fastapi import HTTPException
 
 from app.crud import homework as homework_crud
+from app.crud import homework_step as homework_step_crud
 from app.routers import homework as homework_router
-from app.schemas.homework import HomeworkCreate, HomeworkRead, HomeworkUpdate
+from app.schemas.homework import HomeworkCreate, HomeworkRead, HomeworkStepRead, HomeworkUpdate
 from app.schemas.subject import SubjectRead
+from app.services import smart_planner
+from app.services.smart_planner import PlannerServiceError, StepData
 
 
 def _build_subject() -> SubjectRead:
@@ -32,6 +35,17 @@ def _build_homework() -> HomeworkRead:
         created_at=now,
         updated_at=now,
         steps=[],
+    )
+
+
+def _build_step() -> HomeworkStepRead:
+    now = datetime.now(timezone.utc)
+    return HomeworkStepRead(
+        id=uuid4(),
+        title="Прочитать параграф",
+        order=1,
+        is_completed=False,
+        created_at=now,
     )
 
 
@@ -131,5 +145,63 @@ def test_complete_homework_raises_404_when_not_found(monkeypatch: pytest.MonkeyP
 
     with pytest.raises(HTTPException) as exc:
         asyncio.run(homework_router.complete_homework(uuid4(), db=object()))
+
+    assert exc.value.status_code == 404
+
+
+def test_generate_steps_returns_count(monkeypatch: pytest.MonkeyPatch) -> None:
+    homework = _build_homework()
+    step = _build_step()
+
+    async def fake_get_homework(db, homework_id):
+        return homework
+
+    async def fake_generate_steps(**kwargs):
+        return [StepData(title="Шаг 1", order=1)]
+
+    async def fake_delete_steps(db, homework_id):
+        return None
+
+    async def fake_create_batch(db, homework_id, steps):
+        assert len(steps) == 1
+        return [step]
+
+    monkeypatch.setattr(homework_crud, "get_homework", fake_get_homework)
+    monkeypatch.setattr(smart_planner.smart_planner_service, "generate_steps", fake_generate_steps)
+    monkeypatch.setattr(homework_step_crud, "delete_steps_by_homework", fake_delete_steps)
+    monkeypatch.setattr(homework_step_crud, "create_steps_batch", fake_create_batch)
+
+    result = asyncio.run(homework_router.generate_homework_steps(homework.id, db=object()))
+
+    assert result.count == 1
+    assert result.steps[0].title == step.title
+
+
+def test_generate_steps_returns_502_on_provider_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    homework = _build_homework()
+
+    async def fake_get_homework(db, homework_id):
+        return homework
+
+    async def fake_generate_steps(**kwargs):
+        raise PlannerServiceError("provider error")
+
+    monkeypatch.setattr(homework_crud, "get_homework", fake_get_homework)
+    monkeypatch.setattr(smart_planner.smart_planner_service, "generate_steps", fake_generate_steps)
+
+    with pytest.raises(HTTPException) as exc:
+        asyncio.run(homework_router.generate_homework_steps(homework.id, db=object()))
+
+    assert exc.value.status_code == 502
+
+
+def test_toggle_step_raises_404_when_not_found(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def fake_toggle(db, step_id):
+        return None
+
+    monkeypatch.setattr(homework_step_crud, "toggle_step", fake_toggle)
+
+    with pytest.raises(HTTPException) as exc:
+        asyncio.run(homework_router.toggle_homework_step(uuid4(), db=object()))
 
     assert exc.value.status_code == 404

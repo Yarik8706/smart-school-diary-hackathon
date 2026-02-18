@@ -1,4 +1,10 @@
-import { IconMoodSmile, IconPencil, IconTrash } from "@tabler/icons-react";
+import {
+  IconChecklist,
+  IconLoader2,
+  IconMoodSmile,
+  IconPencil,
+  IconTrash,
+} from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 import type { Homework, Subject } from "@/types/homework";
@@ -8,21 +14,28 @@ import { getStepsProgress, isPastDeadline } from "./homework-utils";
 interface HomeworkCardProps {
   homework: Homework;
   subject?: Subject;
+  isGeneratingSteps?: boolean;
   onEdit: (homework: Homework) => void;
   onDelete: (id: string) => void;
   onToggle: (id: string) => void;
   onMood: (homework: Homework) => void;
+  onGenerateSteps: (id: string) => void;
+  onToggleStep: (id: string) => void;
 }
 
 export function HomeworkCard({
   homework,
   subject,
+  isGeneratingSteps = false,
   onEdit,
   onDelete,
   onToggle,
   onMood,
+  onGenerateSteps,
+  onToggleStep,
 }: HomeworkCardProps) {
   const progress = getStepsProgress(homework.steps);
+  const hasSteps = Boolean(homework.steps?.length);
 
   return (
     <article className="space-y-3 rounded-xl border p-4" data-homework-card>
@@ -44,14 +57,32 @@ export function HomeworkCard({
       >
         Дедлайн: {new Date(homework.deadline).toLocaleDateString("ru-RU")}
       </p>
-      {homework.steps?.length ? (
-        <div className="space-y-1">
+      {hasSteps ? (
+        <div className="space-y-2">
           <p className="text-xs">Прогресс: {progress}%</p>
           <progress
             className="h-2 w-full overflow-hidden rounded-full"
             max={100}
             value={progress}
           />
+          <ul className="space-y-1">
+            {homework.steps?.map((step) => (
+              <li key={step.id}>
+                <label className="flex cursor-pointer items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={step.is_completed}
+                    onChange={() => onToggleStep(step.id)}
+                  />
+                  <span
+                    className={step.is_completed ? "text-muted-foreground line-through" : ""}
+                  >
+                    {step.title}
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
         </div>
       ) : null}
       <div className="flex flex-wrap items-center gap-2">
@@ -63,7 +94,23 @@ export function HomeworkCard({
           />
           Выполнено
         </label>
-        <Button size="sm" variant="outline" onClick={() => onEdit(homework)}>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={isGeneratingSteps}
+          onClick={() => onGenerateSteps(homework.id)}
+        >
+          {isGeneratingSteps ? (
+            <>
+              <IconLoader2 size={16} className="animate-spin" /> Генерация...
+            </>
+          ) : (
+            <>
+              <IconChecklist size={16} /> Сгенерировать шаги
+            </>
+          )}
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => onEdit(homework)}>
           <IconPencil size={16} /> Редактировать
         </Button>
         <Button size="sm" variant="ghost" onClick={() => onMood(homework)}>

@@ -31,3 +31,23 @@
 - Конфигурация читается через `pydantic-settings` из переменных окружения.
 - YouTube API key должен передаваться через `YOUTUBE_API_KEY` в окружении.
 - Файл `.env` не хранится в репозитории; используется `.env.example` как шаблон.
+
+
+## Notes (2026-02-18 smart planning)
+
+## Endpoints
+- `POST /api/v1/homework/{homework_id}/generate-steps` — вызывает AI-генерацию, удаляет старые шаги задания, сохраняет новый набор, возвращает `{steps, count}`.
+- `PATCH /api/v1/homework/steps/{step_id}/toggle` — переключает `is_completed` для одного шага.
+
+## Services
+- `smart_planner` — интеграция с OpenRouter (`google/gemini-2.5-flash`) через `AsyncOpenAI`, структурированный JSON-ответ по схеме `steps[]`, единый тип ошибки `PlannerServiceError`.
+
+## Data Flow
+1. Homework router получает задание по `homework_id` через CRUD.
+2. `smart_planner_service.generate_steps(...)` формирует промпт и вызывает OpenRouter с `json_schema` форматом.
+3. Router удаляет старые шаги (`delete_steps_by_homework`) и массово сохраняет новые (`create_steps_batch`).
+4. UI может переключать конкретный шаг через `toggle_step`.
+
+## Notes
+- Для AI-функции требуется `OPENROUTER_API_KEY` (настраивается через `Settings.openrouter_api_key`).
+- Добавлена зависимость `openai` в `requirements.txt` для OpenRouter-клиента.

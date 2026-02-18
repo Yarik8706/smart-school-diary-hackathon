@@ -9,7 +9,8 @@ export interface Subject {
 export interface HomeworkStep {
   id: string;
   title: string;
-  done: boolean;
+  order: number;
+  is_completed: boolean;
 }
 
 export interface Homework {
@@ -35,6 +36,11 @@ export interface HomeworkUpdate {
   description?: string;
   deadline?: string;
   completed?: boolean;
+}
+
+export interface GenerateStepsResponse {
+  steps: HomeworkStep[];
+  count: number;
 }
 
 export type HomeworkStatusFilter = "all" | "completed" | "active";

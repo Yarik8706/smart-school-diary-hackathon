@@ -240,3 +240,78 @@ test("submits mood rating", async ({ page }) => {
     .poll(() => moodPayload?.mood as string | undefined)
     .toBe("easy");
 });
+
+
+test("generates steps and toggles step completion", async ({ page }) => {
+  let homework = [
+    {
+      id: "h1",
+      subject_id: "s1",
+      title: "Алгебра №3",
+      deadline: "2099-01-01",
+      completed: false,
+      steps: [],
+    },
+  ];
+
+  await page.route("**/api/v1/subjects", async (route) => {
+    await route.fulfill({
+      json: [{ id: "s1", name: "Математика", color: "bg-blue-500" }],
+    });
+  });
+
+  await page.route("**/api/v1/homework**", async (route) => {
+    const method = route.request().method();
+    const url = route.request().url();
+
+    if (method === "POST" && url.endsWith("/generate-steps")) {
+      homework = [
+        {
+          ...homework[0],
+          steps: [
+            {
+              id: "step-1",
+              title: "Повторить формулы",
+              is_completed: false,
+              order: 1,
+            },
+          ],
+        },
+      ];
+      await route.fulfill({ json: { count: 1, steps: homework[0].steps } });
+      return;
+    }
+
+    if (method === "PATCH" && url.includes("/steps/step-1/toggle")) {
+      homework = [
+        {
+          ...homework[0],
+          steps: [
+            {
+              id: "step-1",
+              title: "Повторить формулы",
+              is_completed: true,
+              order: 1,
+            },
+          ],
+        },
+      ];
+      await route.fulfill({ json: homework[0].steps[0] });
+      return;
+    }
+
+    await route.fulfill({ json: homework });
+  });
+
+  await page.route("**/api/v1/mood", async (route) => {
+    await route.fulfill({ json: {} });
+  });
+
+  await page.goto("/homework");
+
+  await page.getByRole("button", { name: "Сгенерировать шаги" }).click();
+  await expect(page.getByText("Повторить формулы")).toBeVisible();
+
+  await page.getByLabel("Повторить формулы").click();
+  await expect(page.getByLabel("Повторить формулы")).toBeChecked();
+});

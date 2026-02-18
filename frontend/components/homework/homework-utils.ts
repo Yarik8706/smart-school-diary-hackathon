@@ -48,7 +48,7 @@ export const filterHomework = (
 
 export const getStepsProgress = (steps?: Homework["steps"]) => {
   if (!steps?.length) return 0;
-  const done = steps.filter((step) => step.done).length;
+  const done = steps.filter((step) => step.is_completed).length;
   return Math.round((done / steps.length) * 100);
 };
 
