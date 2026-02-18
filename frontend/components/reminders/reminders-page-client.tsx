@@ -48,7 +48,7 @@ export function RemindersPageClient() {
     <section className="space-y-4" aria-live="polite">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-3xl font-black">Напоминания</h2>
+          <h2 className="text-3xl font-black hidden md:block">Напоминания</h2>
           <p className="text-muted-foreground text-sm">
             Добавляй уведомления о домашних заданиях и не пропускай дедлайны.
           </p>

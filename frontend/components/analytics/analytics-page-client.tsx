@@ -28,7 +28,7 @@ export function AnalyticsPageClient() {
   return (
     <section className="space-y-4" aria-live="polite">
       <div>
-        <h2 className="text-3xl font-black">Аналитика нагрузки</h2>
+        <h2 className="text-3xl font-black hidden md:block">Аналитика нагрузки</h2>
         <p className="text-muted-foreground text-sm">
           Следи за балансом учебной нагрузки и эмоционального состояния за неделю.
         </p>

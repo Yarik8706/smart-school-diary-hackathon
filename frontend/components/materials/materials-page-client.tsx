@@ -23,7 +23,7 @@ export function MaterialsPageClient() {
   return (
     <section className="space-y-5">
       <header className="space-y-2">
-        <h2 className="text-3xl font-black">Поиск материалов</h2>
+        <h2 className="text-3xl font-black hidden md:block">Поиск материалов</h2>
         <p className="max-w-2xl text-sm text-muted-foreground">
           Ищи полезные статьи и видео по теме или подбирай контент к домашнему
           заданию.

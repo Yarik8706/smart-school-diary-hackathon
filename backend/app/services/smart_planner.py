@@ -56,6 +56,7 @@ class SmartPlannerService:
             response = await self._client.chat.completions.create(
                 model="google/gemini-2.5-flash",
                 response_format=response_format,
+                max_tokens=1024 * 8,
                 messages=[
                     {
                         "role": "system",
@@ -65,23 +66,40 @@ class SmartPlannerService:
                 ],
             )
         except Exception as exc:  # noqa: BLE001
-            logger.error("Smart planner failed: %s", exc, exc_info=True)
+            import traceback
+            print(f"[SMART_PLANNER] API call failed: {exc}", flush=True)
+            traceback.print_exc()
             raise PlannerServiceError("Failed to request smart planning provider") from exc
 
         content = response.choices[0].message.content if response.choices else None
+        print(f"[SMART_PLANNER] Raw response content: {content!r}", flush=True)
         if not content:
             raise PlannerServiceError("Planner returned empty response")
 
         try:
             payload = json.loads(content)
-            steps_payload = payload["steps"]
-            steps = [StepData(title=item["title"].strip(), order=int(item["order"])) for item in steps_payload]
+            if isinstance(payload, list):
+                steps_payload = payload
+            elif isinstance(payload, dict):
+                steps_payload = payload["steps"]
+            else:
+                raise ValueError(f"Unexpected payload type: {type(payload)}")
+            steps: list[StepData] = []
+            for idx, item in enumerate(steps_payload, start=1):
+                if isinstance(item, str):
+                    steps.append(StepData(title=item.strip(), order=idx))
+                elif isinstance(item, dict):
+                    steps.append(StepData(title=item["title"].strip(), order=int(item.get("order", idx))))
+                else:
+                    continue
         except (KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            print(f"[SMART_PLANNER] Parse failed: {exc}, content was: {content!r}", flush=True)
             raise PlannerServiceError("Planner returned invalid response format") from exc
 
         normalized_steps = [step for step in steps if step.title]
         if not normalized_steps:
             raise PlannerServiceError("Planner returned no usable steps")
+        print(f"[SMART_PLANNER] Success: {len(normalized_steps)} steps generated", flush=True)
         return normalized_steps
 
 
