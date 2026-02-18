@@ -18,7 +18,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "border-border/60 bg-card/80 sticky top-0 hidden h-screen overflow-y-auto border-r px-3 py-4 backdrop-blur-md md:flex md:flex-col",
+        "border-border/60 bg-card/80 sticky top-0 z-30 hidden h-screen shrink-0 overflow-y-auto border-r px-3 py-4 backdrop-blur-md md:flex md:flex-col",
         collapsed ? "w-20" : "w-72",
       )}
       aria-label="Основная навигация"

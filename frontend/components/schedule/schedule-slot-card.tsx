@@ -34,16 +34,18 @@ export default function ScheduleSlotCard({
           )}
         />
         <div className="space-y-1">
-          <h3 className="text-sm font-semibold">{subject?.name ?? "Без предмета"}</h3>
+          <h3 className="text-sm font-semibold">
+            {subject?.name ?? "Без предмета"}
+          </h3>
           <p className="text-muted-foreground text-xs">
             {slot.start_time} - {slot.end_time}
           </p>
           <p className="text-xs">Кабинет: {slot.room}</p>
         </div>
       </div>
-      <div className="mt-auto flex gap-2">
+      <div className="mt-auto flex flex-wrap gap-2">
         <Button
-          className="flex-1"
+          className="min-w-[8.5rem] flex-1"
           size="sm"
           variant="outline"
           onClick={() => onEdit(slot)}
@@ -51,7 +53,7 @@ export default function ScheduleSlotCard({
           Редактировать
         </Button>
         <Button
-          className="flex-1"
+          className="min-w-[8.5rem] flex-1"
           size="sm"
           variant="ghost"
           onClick={handleDelete}
