@@ -217,3 +217,23 @@
 
 ## Notes
 - Для локального mock режима добавлены обработчики `generate-steps` и `toggle-step` в `lib/mock-api-routes.ts`.
+
+
+## Notes (2026-02-18 ai materials recommendation)
+
+## Functions
+- `useMaterialStore` в `store/materials.ts` хранит `recommendation` и обрабатывает новый backend-контракт `AIMaterialsResponse` для ручного поиска и материалов по ДЗ.
+- `MaterialsPageClient` в `components/materials/materials-page-client.tsx` отображает блок `AI-рекомендация` при непустом поле `recommendation`.
+- `MaterialCard` в `components/materials/material-card.tsx` показывает `description` и поддерживает source `website` с иконкой `IconWorld`.
+
+## Types
+- `AIMaterialsResponse` добавлен в `types/materials.ts`.
+- `Material` расширен полем `description`, а `MaterialSource` — значением `website`.
+
+## Data Flow
+1. Поиск материалов получает ответ `AIMaterialsResponse` с `materials[]` и `recommendation`.
+2. Zustand store сохраняет материалы и AI-рекомендацию в единый state.
+3. Страница материалов рендерит рекомендацию над списком карточек.
+
+## Notes
+- Тесты обновлены для store и компонентов материалов под новый контракт ответа.

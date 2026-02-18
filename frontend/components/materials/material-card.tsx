@@ -1,4 +1,8 @@
-import { IconArticle, IconBrandYoutube } from "@tabler/icons-react";
+import {
+  IconArticle,
+  IconBrandYoutube,
+  IconWorld,
+} from "@tabler/icons-react";
 
 import type { Material } from "@/types/materials";
 
@@ -14,6 +18,10 @@ const sourceMeta = {
   article: {
     label: "Article",
     icon: IconArticle,
+  },
+  website: {
+    label: "Website",
+    icon: IconWorld,
   },
 };
 
@@ -35,6 +43,9 @@ export function MaterialCard({ material }: MaterialCardProps) {
         <span>{meta.label}</span>
       </div>
       <h3 className="text-base font-extrabold text-foreground">{material.title}</h3>
+      {material.description ? (
+        <p className="text-sm text-muted-foreground">{material.description}</p>
+      ) : null}
       <a
         href={material.url}
         target="_blank"

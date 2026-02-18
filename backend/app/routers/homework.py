@@ -10,7 +10,8 @@ from app.core.database import get_db
 from app.crud import homework as homework_crud
 from app.crud import homework_step as homework_step_crud
 from app.schemas.homework import GenerateStepsResponse, HomeworkCreate, HomeworkRead, HomeworkStepRead, HomeworkUpdate
-from app.schemas.materials import MaterialSearchResult
+from app.schemas.materials import AIMaterialsResponse
+from app.services.ai_materials_search import AIMaterialsSearchError, search_materials_with_ai
 from app.services.materials_search import MaterialsProviderError, search_materials
 from app.services.smart_planner import PlannerServiceError, smart_planner_service
 
@@ -73,8 +74,8 @@ async def delete_homework(homework_id: uuid.UUID, db: AsyncSession = Depends(get
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Homework not found")
 
 
-@router.get("/{homework_id}/materials", response_model=list[MaterialSearchResult])
-async def get_homework_materials(homework_id: uuid.UUID, db: AsyncSession = Depends(get_db)) -> list[MaterialSearchResult]:
+@router.get("/{homework_id}/materials", response_model=AIMaterialsResponse)
+async def get_homework_materials(homework_id: uuid.UUID, db: AsyncSession = Depends(get_db)) -> AIMaterialsResponse:
     """Получить рекомендованные материалы для домашнего задания по его теме и предмету."""
     homework = await homework_crud.get_homework(db, homework_id)
     if homework is None:
@@ -82,12 +83,20 @@ async def get_homework_materials(homework_id: uuid.UUID, db: AsyncSession = Depe
 
     subject_name = homework.subject.name if homework.subject is not None else None
     try:
-        return await search_materials(query=homework.title, subject=subject_name)
-    except MaterialsProviderError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="Materials provider is unavailable",
-        ) from exc
+        return await search_materials_with_ai(
+            title=homework.title,
+            description=homework.description,
+            subject=subject_name,
+        )
+    except AIMaterialsSearchError:
+        try:
+            fallback = await search_materials(query=homework.title, subject=subject_name)
+            return AIMaterialsResponse(materials=fallback, recommendation="")
+        except MaterialsProviderError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail="Materials provider is unavailable",
+            ) from exc
 
 
 @router.post("/{homework_id}/generate-steps", response_model=GenerateStepsResponse)
