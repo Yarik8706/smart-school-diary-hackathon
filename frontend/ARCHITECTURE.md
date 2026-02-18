@@ -131,3 +131,12 @@
 - Homework card action hierarchy updated (`Оценить сложность` moved to ghost style), completion indicator simplified to a single checkbox mode.
 - Homework filters now keep equal full-width controls and shift to a balanced two-row layout on smaller screens.
 - Analytics warnings received tone-based styling (`warning`/`danger`/`info`) to reduce always-red emphasis.
+
+## Notes (2026-02-18 Playwright integration coverage)
+
+- Added full Playwright integration matrix in `tests/` for all primary pages: dashboard (`dashboard.spec.ts`), schedule (`schedule.spec.ts`), homework (`homework.spec.ts`), reminders (`reminders.spec.ts`), analytics (`analytics.spec.ts`), materials (`materials.spec.ts`), global navigation (`navigation.spec.ts`), and notification dropdown (`notification-bell.spec.ts`).
+- New schedule coverage validates page render, slot creation/deletion, and subject management CRUD with mocked `/subjects` and `/schedule/slots` API calls.
+- Homework coverage now includes create, completion toggle (`PATCH /api/v1/homework/:id/complete`), deletion, modal validation, and mood submission (`POST /api/v1/mood`).
+- Reminders coverage now includes create and deletion flows in addition to initial grouped render state.
+- Analytics coverage now validates normal render, empty data state, and API failure rendering path.
+- All Playwright scenarios rely on `page.route()` API mocking and do not require a running backend service.

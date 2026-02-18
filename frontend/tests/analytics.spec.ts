@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/v1/reminders/pending", async (route) => {
+    await route.fulfill({ json: { reminders: [] } });
+  });
+});
+
 test("loads analytics page and renders charts with warnings", async ({ page }) => {
   await page.route("**/api/v1/analytics/load", async (route) => {
     await route.fulfill({
@@ -35,4 +41,45 @@ test("loads analytics page and renders charts with warnings", async ({ page }) =
   await expect(page.getByText("Нагрузка по дням")).toBeVisible();
   await expect(page.getByText("Статистика настроения")).toBeVisible();
   await expect(page.getByText("Риск перегрузки")).toBeVisible();
+});
+
+test("renders empty analytics state", async ({ page }) => {
+  await page.route("**/api/v1/analytics/load", async (route) => {
+    await route.fulfill({ json: { days: [] } });
+  });
+
+  await page.route("**/api/v1/mood/stats", async (route) => {
+    await route.fulfill({ json: { easy: 0, normal: 0, hard: 0 } });
+  });
+
+  await page.route("**/api/v1/analytics/warnings", async (route) => {
+    await route.fulfill({ json: [] });
+  });
+
+  await page.goto("/analytics");
+
+  await expect(
+    page.getByText("Пока нет данных по нагрузке за неделю."),
+  ).toBeVisible();
+  await expect(page.getByText("Перегрузок не обнаружено.")).toBeVisible();
+});
+
+test("shows api error on analytics failure", async ({ page }) => {
+  await page.route("**/api/v1/analytics/load", async (route) => {
+    await route.fulfill({ status: 500, json: { detail: "boom" } });
+  });
+
+  await page.route("**/api/v1/mood/stats", async (route) => {
+    await route.fulfill({ status: 500, json: { detail: "boom" } });
+  });
+
+  await page.route("**/api/v1/analytics/warnings", async (route) => {
+    await route.fulfill({ status: 500, json: { detail: "boom" } });
+  });
+
+  await page.goto("/analytics");
+
+  await expect(
+    page.getByText("Не удалось загрузить предупреждения."),
+  ).toBeVisible();
 });

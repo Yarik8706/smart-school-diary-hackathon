@@ -1,6 +1,6 @@
-# NEXT STEPS
+## Next steps for developers
 
-1. Подключить реальные API-контракты к новым мок-роутам в `lib/mock-api-routes.ts`, чтобы структура ответов полностью совпадала с backend.
-2. Добавить e2e-сценарии Playwright для открытия/закрытия всех модалок и проверки portal-overlay поверх shell-контейнера.
-3. Вынести in-memory состояние моков в отдельный reset-механизм для тестов, чтобы каждый тест запускался с чистыми данными.
-4. Добавить переключатель mock/live в UI (например, в dev-only панели), чтобы не менять `.env.local` вручную.
+1. Integrate Playwright tests into CI (GitHub Actions/GitLab CI) with browser dependency caching to reduce runtime.
+2. Add per-spec shared mock helpers (fixtures for `page.route`) to minimize duplication and simplify maintenance.
+3. Add smoke coverage for mobile viewport variants in navigation and schedule flows.
+4. Enable Playwright HTML report publishing as CI artifact for easier debugging.
