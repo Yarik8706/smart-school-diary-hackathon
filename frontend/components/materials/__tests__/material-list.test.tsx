@@ -10,7 +10,7 @@ describe("MaterialList", () => {
     expect(screen.getByText("Ничего не найдено")).toBeVisible();
   });
 
-  it("renders material cards", () => {
+  it("renders material cards with description", () => {
     render(
       <MaterialList
         materials={[
@@ -20,12 +20,14 @@ describe("MaterialList", () => {
             source: "youtube",
             url: "https://youtu.be/abc",
             thumbnail: "https://img.youtube.com/vi/abc/default.jpg",
+            description: "Разбор типовых заданий",
           },
         ]}
-      />, 
+      />,
     );
 
     expect(screen.getByText("Видео по алгебре")).toBeVisible();
+    expect(screen.getByText("Разбор типовых заданий")).toBeVisible();
     expect(screen.getByRole("link", { name: "Открыть" })).toHaveAttribute(
       "target",
       "_blank",

@@ -1,10 +1,11 @@
 import { create } from "zustand";
 
 import { api } from "@/lib/api-client";
-import type { Material } from "@/types/materials";
+import type { AIMaterialsResponse, Material } from "@/types/materials";
 
 export interface MaterialStore {
   materials: Material[];
+  recommendation: string;
   loading: boolean;
   error: string | null;
   searchMaterials: (query: string, subject?: string) => Promise<void>;
@@ -23,15 +24,26 @@ const buildSearchUrl = (query: string, subject?: string) => {
   return `${searchPath}?${params.toString()}`;
 };
 
+const normalizeResponse = (payload: AIMaterialsResponse): AIMaterialsResponse => ({
+  materials: Array.isArray(payload.materials) ? payload.materials : [],
+  recommendation: payload.recommendation ?? "",
+});
+
 export const useMaterialStore = create<MaterialStore>((set) => ({
   materials: [],
+  recommendation: "",
   loading: false,
   error: null,
   searchMaterials: async (query, subject) => {
     set({ loading: true });
     try {
-      const materials = await api.get<Material[]>(buildSearchUrl(query, subject));
-      set({ materials: Array.isArray(materials) ? materials : [], error: null });
+      const response = await api.get<AIMaterialsResponse>(buildSearchUrl(query, subject));
+      const normalized = normalizeResponse(response);
+      set({
+        materials: normalized.materials,
+        recommendation: normalized.recommendation,
+        error: null,
+      });
     } catch {
       set({ error: "Не удалось загрузить материалы." });
     } finally {
@@ -41,10 +53,13 @@ export const useMaterialStore = create<MaterialStore>((set) => ({
   fetchHomeworkMaterials: async (homeworkId) => {
     set({ loading: true });
     try {
-      const materials = await api.get<Material[]>(
-        `/api/v1/homework/${homeworkId}/materials`,
-      );
-      set({ materials, error: null });
+      const response = await api.get<AIMaterialsResponse>(`/api/v1/homework/${homeworkId}/materials`);
+      const normalized = normalizeResponse(response);
+      set({
+        materials: normalized.materials,
+        recommendation: normalized.recommendation,
+        error: null,
+      });
     } catch {
       set({ error: "Не удалось загрузить материалы." });
     } finally {
