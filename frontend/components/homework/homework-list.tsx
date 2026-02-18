@@ -10,19 +10,25 @@ import { HomeworkCard } from "./homework-card";
 interface HomeworkListProps {
   homework: Homework[];
   subjects: Subject[];
+  generatingById: Record<string, boolean>;
   onEdit: (homework: Homework) => void;
   onDelete: (id: string) => void;
   onToggle: (id: string) => void;
   onMood: (homework: Homework) => void;
+  onGenerateSteps: (id: string) => void;
+  onToggleStep: (id: string) => void;
 }
 
 export function HomeworkList({
   homework,
   subjects,
+  generatingById,
   onEdit,
   onDelete,
   onToggle,
   onMood,
+  onGenerateSteps,
+  onToggleStep,
 }: HomeworkListProps) {
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -50,10 +56,13 @@ export function HomeworkList({
           key={item.id}
           homework={item}
           subject={subjects.find((subject) => subject.id === item.subject_id)}
+          isGeneratingSteps={Boolean(generatingById[item.id])}
           onEdit={onEdit}
           onDelete={onDelete}
           onToggle={onToggle}
           onMood={onMood}
+          onGenerateSteps={onGenerateSteps}
+          onToggleStep={onToggleStep}
         />
       ))}
     </div>

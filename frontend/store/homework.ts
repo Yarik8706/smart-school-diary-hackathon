@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 import { api } from "@/lib/api-client";
 import type {
+  GenerateStepsResponse,
   Homework,
   HomeworkCreate,
   HomeworkFiltersState,
@@ -14,6 +15,7 @@ export interface HomeworkStore {
   homework: Homework[];
   subjects: Subject[];
   isLoading: boolean;
+  isGeneratingByHomeworkId: Record<string, boolean>;
   error: string | null;
   fetchHomework: (filters?: HomeworkFiltersState) => Promise<void>;
   fetchSubjects: () => Promise<void>;
@@ -21,6 +23,8 @@ export interface HomeworkStore {
   updateHomework: (id: string, hw: HomeworkUpdate) => Promise<void>;
   deleteHomework: (id: string) => Promise<void>;
   toggleComplete: (id: string) => Promise<void>;
+  generateSteps: (homeworkId: string) => Promise<void>;
+  toggleStep: (stepId: string) => Promise<void>;
   submitMood: (
     homeworkId: string,
     mood: MoodLevel,
@@ -45,6 +49,7 @@ export const useHomeworkStore = create<HomeworkStore>((set, get) => ({
   homework: [],
   subjects: [],
   isLoading: false,
+  isGeneratingByHomeworkId: {},
   error: null,
   fetchHomework: async (filters) => {
     set({ isLoading: true });
@@ -89,6 +94,41 @@ export const useHomeworkStore = create<HomeworkStore>((set, get) => ({
       method: "PATCH",
     });
     await get().fetchHomework();
+  },
+  generateSteps: async (homeworkId) => {
+    set((state) => ({
+      isGeneratingByHomeworkId: {
+        ...state.isGeneratingByHomeworkId,
+        [homeworkId]: true,
+      },
+    }));
+    try {
+      await api.post<GenerateStepsResponse>(
+        `${homeworkPath}/${homeworkId}/generate-steps`,
+      );
+      await get().fetchHomework();
+      set({ error: null });
+    } catch {
+      set({ error: "Не удалось сгенерировать шаги." });
+    } finally {
+      set((state) => ({
+        isGeneratingByHomeworkId: {
+          ...state.isGeneratingByHomeworkId,
+          [homeworkId]: false,
+        },
+      }));
+    }
+  },
+  toggleStep: async (stepId) => {
+    try {
+      await api.request(`${homeworkPath}/steps/${stepId}/toggle`, {
+        method: "PATCH",
+      });
+      await get().fetchHomework();
+      set({ error: null });
+    } catch {
+      set({ error: "Не удалось обновить шаг." });
+    }
   },
   submitMood: async (homeworkId, mood, note) => {
     await api.post("/api/v1/mood", {

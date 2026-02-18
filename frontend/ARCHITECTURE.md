@@ -196,3 +196,24 @@
 
 - Dashboard keeps quick actions and hero section static while backend-driven metrics update asynchronously.
 - Playwright dashboard spec now mocks newly used dashboard endpoints in addition to reminder polling.
+
+
+## Notes (2026-02-18 smart homework steps)
+
+## Functions
+- `useHomeworkStore` в `store/homework.ts` получил действия `generateSteps(homeworkId)` и `toggleStep(stepId)` плюс состояние `isGeneratingByHomeworkId` для per-card loading.
+- `HomeworkCard` в `components/homework/homework-card.tsx` получил кнопку `Сгенерировать шаги`, loader-состояние и чеклист шагов с переключением.
+- `HomeworkList` и `HomeworkPageClient` прокидывают новые обработчики генерации/переключения шагов до карточек.
+
+## Types
+- `HomeworkStep` в `types/homework.ts` использует backend-поля `order` и `is_completed`.
+- Добавлен `GenerateStepsResponse` для ответа `POST /api/v1/homework/{id}/generate-steps`.
+
+## Data Flow
+1. Пользователь нажимает `Сгенерировать шаги` в карточке ДЗ.
+2. Store вызывает `POST /api/v1/homework/{id}/generate-steps`, показывает loader конкретной карточки, затем обновляет список ДЗ.
+3. Пользователь отмечает шаг в чеклисте.
+4. Store вызывает `PATCH /api/v1/homework/steps/{step_id}/toggle` и перезапрашивает список ДЗ.
+
+## Notes
+- Для локального mock режима добавлены обработчики `generate-steps` и `toggle-step` в `lib/mock-api-routes.ts`.

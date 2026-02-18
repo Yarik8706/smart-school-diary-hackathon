@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://app:app@postgres:5432/app"
     cors_origins: list[str] = ["http://localhost:3000"]
     youtube_api_key: str = "AIzaSyBG6rfI9cfKVr4HLLxk4htixP1J7UGZylA"
+    openrouter_api_key: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env",

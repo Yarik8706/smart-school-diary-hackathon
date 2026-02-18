@@ -24,12 +24,17 @@ export function HomeworkPageClient() {
   const subjects = useHomeworkStore((state) => state.subjects);
   const isLoading = useHomeworkStore((state) => state.isLoading);
   const error = useHomeworkStore((state) => state.error);
+  const generatingById = useHomeworkStore(
+    (state) => state.isGeneratingByHomeworkId,
+  );
   const fetchHomework = useHomeworkStore((state) => state.fetchHomework);
   const fetchSubjects = useHomeworkStore((state) => state.fetchSubjects);
   const addHomework = useHomeworkStore((state) => state.addHomework);
   const updateHomework = useHomeworkStore((state) => state.updateHomework);
   const deleteHomework = useHomeworkStore((state) => state.deleteHomework);
   const toggleComplete = useHomeworkStore((state) => state.toggleComplete);
+  const generateSteps = useHomeworkStore((state) => state.generateSteps);
+  const toggleStep = useHomeworkStore((state) => state.toggleStep);
   const submitMood = useHomeworkStore((state) => state.submitMood);
 
   const [filters, setFilters] = useState(defaultFilters);
@@ -75,6 +80,7 @@ export function HomeworkPageClient() {
       <HomeworkList
         homework={items}
         subjects={subjects}
+        generatingById={generatingById}
         onEdit={(item) => {
           setEditingHomework(item);
           setEditOpen(true);
@@ -82,6 +88,8 @@ export function HomeworkPageClient() {
         onDelete={(id) => void deleteHomework(id)}
         onToggle={(id) => void toggleComplete(id)}
         onMood={setMoodHomework}
+        onGenerateSteps={(id) => void generateSteps(id)}
+        onToggleStep={(id) => void toggleStep(id)}
       />
       <HomeworkEditModal
         open={isEditOpen}

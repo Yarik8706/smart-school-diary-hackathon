@@ -98,6 +98,29 @@ export const resolveMockRequest = <T>(endpoint: string, options: ApiRequestOptio
     state.homework = state.homework.map((i) => (i.id === id ? { ...i, completed: !i.completed } : i));
     return undefined as T;
   }
+  if (path.endsWith("/generate-steps") && method === "POST") {
+    const id = path.replace("/api/v1/homework/", "").replace("/generate-steps", "");
+    const target = state.homework.find((item) => item.id === id);
+    const steps = [
+      { id: uid(), title: "Прочитать условие и выделить главное", order: 1, is_completed: false },
+      { id: uid(), title: "Составить короткий план решения", order: 2, is_completed: false },
+      { id: uid(), title: "Проверить и оформить ответ", order: 3, is_completed: false },
+    ];
+    if (target) {
+      Object.assign(target, { steps });
+    }
+    return { steps, count: steps.length } as T;
+  }
+  if (path.includes("/steps/") && path.endsWith("/toggle") && method === "PATCH") {
+    const stepId = path.replace("/api/v1/homework/steps/", "").replace("/toggle", "");
+    state.homework = state.homework.map((item) => ({
+      ...item,
+      steps: item.steps?.map((step) =>
+        step.id === stepId ? { ...step, is_completed: !step.is_completed } : step,
+      ),
+    }));
+    return undefined as T;
+  }
   if (path.startsWith("/api/v1/homework/") && method === "PUT") {
     const id = path.replace("/api/v1/homework/", "");
     state.homework = state.homework.map((i) => (i.id === id ? { ...i, ...(body as object) } : i));

@@ -18,6 +18,19 @@ class HomeworkStepRead(BaseModel):
     created_at: datetime
 
 
+class HomeworkStepCreate(BaseModel):
+    title: str = Field(min_length=1, max_length=255)
+    order: int = Field(ge=0)
+
+    @field_validator("title")
+    @classmethod
+    def validate_title(cls, value: str) -> str:
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError("title must not be empty")
+        return cleaned
+
+
 class HomeworkBase(BaseModel):
     subject_id: uuid.UUID | None = Field(default=None, example="9efbcad1-5604-4cd3-85e2-c3c74ef7de47")
     title: str | None = Field(default=None, min_length=1, example="Решить задачи №1-10")
@@ -27,7 +40,7 @@ class HomeworkBase(BaseModel):
 
     @field_validator("title")
     @classmethod
-    def validate_title(cls, value: str | None) -> str | None:
+    def validate_title_optional(cls, value: str | None) -> str | None:
         if value is None:
             return value
         cleaned = value.strip()
@@ -73,3 +86,8 @@ class HomeworkRead(BaseModel):
         if value == "":
             return None
         return value
+
+
+class GenerateStepsResponse(BaseModel):
+    steps: list[HomeworkStepRead]
+    count: int = Field(ge=0)

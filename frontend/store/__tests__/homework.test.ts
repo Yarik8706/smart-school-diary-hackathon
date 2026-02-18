@@ -24,6 +24,7 @@ describe("useHomeworkStore", () => {
       homework: [],
       subjects: [],
       isLoading: false,
+      isGeneratingByHomeworkId: {},
       error: null,
     });
   });
@@ -82,6 +83,23 @@ describe("useHomeworkStore", () => {
     expect(mockedApi.request).toHaveBeenCalledWith("/api/v1/homework/h1", {
       method: "DELETE",
     });
+  });
+
+  it("generates and toggles steps", async () => {
+    mockedApi.post.mockResolvedValue({ steps: [], count: 0 });
+    mockedApi.request.mockResolvedValue({});
+    mockedApi.get.mockResolvedValue([]);
+
+    await useHomeworkStore.getState().generateSteps("h1");
+    await useHomeworkStore.getState().toggleStep("step-1");
+
+    expect(mockedApi.post).toHaveBeenCalledWith(
+      "/api/v1/homework/h1/generate-steps",
+    );
+    expect(mockedApi.request).toHaveBeenCalledWith(
+      "/api/v1/homework/steps/step-1/toggle",
+      { method: "PATCH" },
+    );
   });
 
   it("applies localized error if homework fetch fails", async () => {

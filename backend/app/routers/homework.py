@@ -8,9 +8,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.crud import homework as homework_crud
-from app.schemas.homework import HomeworkCreate, HomeworkRead, HomeworkUpdate
+from app.crud import homework_step as homework_step_crud
+from app.schemas.homework import GenerateStepsResponse, HomeworkCreate, HomeworkRead, HomeworkStepRead, HomeworkUpdate
 from app.schemas.materials import MaterialSearchResult
 from app.services.materials_search import MaterialsProviderError, search_materials
+from app.services.smart_planner import PlannerServiceError, smart_planner_service
 
 router = APIRouter(prefix="/v1/homework", tags=["homework"])
 
@@ -86,6 +88,42 @@ async def get_homework_materials(homework_id: uuid.UUID, db: AsyncSession = Depe
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Materials provider is unavailable",
         ) from exc
+
+
+@router.post("/{homework_id}/generate-steps", response_model=GenerateStepsResponse)
+async def generate_homework_steps(homework_id: uuid.UUID, db: AsyncSession = Depends(get_db)) -> GenerateStepsResponse:
+    """Сгенерировать и сохранить шаги выполнения для домашнего задания."""
+    homework = await homework_crud.get_homework(db, homework_id)
+    if homework is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Homework not found")
+
+    subject_name = homework.subject.name if homework.subject is not None else None
+    try:
+        generated_steps = await smart_planner_service.generate_steps(
+            title=homework.title,
+            description=homework.description,
+            subject_name=subject_name,
+            deadline=homework.deadline if isinstance(homework.deadline, date) else homework.deadline.date(),
+        )
+    except PlannerServiceError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Smart planner is unavailable",
+        ) from exc
+
+    await homework_step_crud.delete_steps_by_homework(db, homework_id)
+    steps = await homework_step_crud.create_steps_batch(db, homework_id, generated_steps)
+    step_reads = [HomeworkStepRead.model_validate(step) for step in steps]
+    return GenerateStepsResponse(steps=step_reads, count=len(step_reads))
+
+
+@router.patch("/steps/{step_id}/toggle", response_model=HomeworkStepRead)
+async def toggle_homework_step(step_id: uuid.UUID, db: AsyncSession = Depends(get_db)) -> HomeworkStepRead:
+    """Переключить статус выполнения шага домашнего задания."""
+    step = await homework_step_crud.toggle_step(db, step_id)
+    if step is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Homework step not found")
+    return HomeworkStepRead.model_validate(step)
 
 
 @router.patch("/{homework_id}/complete", response_model=HomeworkRead)
