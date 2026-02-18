@@ -55,10 +55,10 @@ export default function NotificationBell() {
   const badge = useMemo(() => Math.min(items.length, 99), [items.length]);
 
   return (
-    <div className="relative">
+    <div className="relative z-50">
       <button
         type="button"
-        className="hover:bg-accent relative inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border/70"
+        className="hover:bg-accent border-border/70 relative inline-flex h-10 w-10 items-center justify-center rounded-xl border"
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         aria-controls="pending-reminders"
@@ -75,23 +75,27 @@ export default function NotificationBell() {
       <section
         id="pending-reminders"
         className={cn(
-          "absolute right-0 z-50 mt-3 w-72 rounded-2xl border border-border/70 bg-popover p-3 shadow-lg",
+          "border-border/70 bg-popover absolute right-0 z-50 mt-3 w-72 rounded-2xl border p-3 shadow-lg",
           isOpen ? "block" : "hidden",
         )}
       >
-        <h2 className="mb-2 text-sm font-semibold">Непрочитанные напоминания</h2>
+        <h2 className="mb-2 text-sm font-semibold">
+          Непрочитанные напоминания
+        </h2>
         {error ? <p className="text-destructive text-xs">{error}</p> : null}
         <ul className="max-h-56 space-y-2 overflow-auto">
           {items.length === 0 ? (
-            <li className="text-muted-foreground rounded-xl bg-muted/40 p-2 text-xs">
+            <li className="text-muted-foreground bg-muted/40 rounded-xl p-2 text-xs">
               Пока всё чисто — новых напоминаний нет.
             </li>
           ) : (
             items.map((item) => (
-              <li key={item.id} className="rounded-xl bg-muted/40 p-2">
+              <li key={item.id} className="bg-muted/40 rounded-xl p-2">
                 <p className="text-sm font-medium">{item.title}</p>
                 {item.due_at ? (
-                  <p className="text-muted-foreground mt-1 text-xs">{item.due_at}</p>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    {item.due_at}
+                  </p>
                 ) : null}
               </li>
             ))

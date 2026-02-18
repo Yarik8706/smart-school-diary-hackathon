@@ -18,7 +18,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden border-r border-border/60 bg-card/80 px-3 py-4 backdrop-blur-md md:flex md:flex-col",
+        "border-border/60 bg-card/80 sticky top-0 hidden h-screen overflow-y-auto border-r px-3 py-4 backdrop-blur-md md:flex md:flex-col",
         collapsed ? "w-20" : "w-72",
       )}
       aria-label="Основная навигация"
@@ -33,7 +33,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         <button
           type="button"
           onClick={onToggle}
-          className="hover:bg-accent inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border/70 transition"
+          className="hover:bg-accent border-border/70 inline-flex h-10 w-10 items-center justify-center rounded-xl border transition"
           aria-label={collapsed ? "Развернуть меню" : "Свернуть меню"}
         >
           <IconLayoutSidebarLeftCollapse

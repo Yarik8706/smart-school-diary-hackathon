@@ -160,6 +160,7 @@
 
 - TDD coverage added for materials store and UI components in `store/__tests__/materials.test.ts`, `components/materials/__tests__/material-search.test.tsx`, and `components/materials/__tests__/material-list.test.tsx`.
 - Playwright smoke coverage for `/materials` search flow added in `tests/materials.spec.ts` (requires Playwright browser binaries in environment).
+
 ## Notes (2026-02-18 Playwright integration coverage)
 
 - Added full Playwright integration matrix in `tests/` for all primary pages: dashboard (`dashboard.spec.ts`), schedule (`schedule.spec.ts`), homework (`homework.spec.ts`), reminders (`reminders.spec.ts`), analytics (`analytics.spec.ts`), materials (`materials.spec.ts`), global navigation (`navigation.spec.ts`), and notification dropdown (`notification-bell.spec.ts`).
@@ -168,3 +169,30 @@
 - Reminders coverage now includes create and deletion flows in addition to initial grouped render state.
 - Analytics coverage now validates normal render, empty data state, and API failure rendering path.
 - All Playwright scenarios rely on `page.route()` API mocking and do not require a running backend service.
+
+## Notes (2026-02-18 dashboard integration + shell fixes)
+
+## Functions
+
+- `ModalOverlay` in `components/common/modal-overlay.tsx` now keeps an internal `visible` state to preserve DOM during close animation and unmounts only after GSAP fade/scale-out completion.
+- `AppShell`, `Sidebar`, `Header`, and `NotificationBell` in `components/layout/*` were adjusted for stacking/scroll behavior: sticky desktop sidebar, elevated header layer, and raised bell container z-index.
+- `HomePage` in `app/page.tsx` now renders `DashboardPageClient`, moving dashboard interactivity into a client component.
+- `DashboardPageClient` in `components/dashboard/dashboard-page-client.tsx` fetches dashboard summary on mount and renders loading/error-aware KPI cards.
+- `useDashboardStore` in `store/dashboard.ts` aggregates homework, schedule, subjects, and warnings endpoints into a single `DashboardSummary` state.
+
+## Types
+
+- `DashboardSummary` in `types/dashboard.ts` defines typed aggregates for nearest homework, today's lessons, and warnings card content.
+
+## Data Flow
+
+1. `/` route renders server component `HomePage`, which mounts `DashboardPageClient`.
+2. On mount, `DashboardPageClient` calls `fetchDashboard()` from Zustand store.
+3. `useDashboardStore` executes four parallel API calls (`/api/v1/homework`, `/schedule/slots`, `/api/v1/subjects`, `/api/v1/analytics/warnings`).
+4. Store derives nearest incomplete homework, today's lessons list/count, and warnings summary, then updates UI cards.
+5. `ModalOverlay` close transitions keep portal visible until animation completes, preserving smooth UX for all modal consumers.
+
+## Notes
+
+- Dashboard keeps quick actions and hero section static while backend-driven metrics update asynchronously.
+- Playwright dashboard spec now mocks newly used dashboard endpoints in addition to reminder polling.

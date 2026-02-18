@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, type MouseEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+  type ReactNode,
+} from "react";
 import { createPortal } from "react-dom";
 import { gsap } from "gsap";
 
@@ -29,9 +35,17 @@ export default function ModalOverlay({
 }: ModalOverlayProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(open);
 
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setVisible(true);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!visible) {
       return;
     }
 
@@ -41,28 +55,50 @@ export default function ModalOverlay({
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [open]);
+  }, [visible]);
 
   useEffect(() => {
-    if (!open || !overlayRef.current || !contentRef.current) {
+    if (!visible || !overlayRef.current || !contentRef.current) {
       return;
     }
 
-    gsap.fromTo(
-      overlayRef.current,
-      { opacity: 0 },
-      { opacity: 1, duration: 0.2, ease: "power1.out" },
+    const overlay = overlayRef.current;
+    const content = contentRef.current;
+
+    if (open) {
+      gsap.fromTo(
+        overlay,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.2, ease: "power1.out" },
+      );
+      gsap.fromTo(
+        content,
+        { opacity: 0, y: 12, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.25, ease: "power2.out" },
+      );
+      focusFirstElement(content);
+      return;
+    }
+
+    const closeTimeline = gsap.timeline({
+      defaults: { ease: "power1.out" },
+      onComplete: () => setVisible(false),
+    });
+
+    closeTimeline.to(overlay, { opacity: 0, duration: 0.2 }, 0);
+    closeTimeline.to(
+      content,
+      { opacity: 0, y: 12, scale: 0.95, duration: 0.2, ease: "power2.in" },
+      0,
     );
-    gsap.fromTo(
-      contentRef.current,
-      { opacity: 0, y: 12, scale: 0.95 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.25, ease: "power2.out" },
-    );
-    focusFirstElement(contentRef.current);
-  }, [open]);
+
+    return () => {
+      closeTimeline.kill();
+    };
+  }, [open, visible]);
 
   useEffect(() => {
-    if (!open) {
+    if (!visible) {
       return;
     }
 
@@ -75,7 +111,7 @@ export default function ModalOverlay({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose, open]);
+  }, [onClose, visible]);
 
   const onOverlayClick = (event: MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
@@ -83,7 +119,7 @@ export default function ModalOverlay({
     }
   };
 
-  if (!open || typeof document === "undefined") {
+  if (!visible || typeof document === "undefined") {
     return null;
   }
 
