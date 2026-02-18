@@ -36,8 +36,10 @@ class SmartPlannerService:
         subject_name: str | None,
         deadline: date,
     ) -> list[StepData]:
+        fallback_steps = self._generate_fallback_steps(title=title, description=description)
         if not settings.openrouter_api_key:
-            raise PlannerServiceError("OpenRouter API key is not configured")
+            logger.warning("OpenRouter API key is not configured, using fallback planner")
+            return fallback_steps
 
         response_format = {"type": "json_object"}
 
@@ -66,15 +68,13 @@ class SmartPlannerService:
                 ],
             )
         except Exception as exc:  # noqa: BLE001
-            import traceback
-            print(f"[SMART_PLANNER] API call failed: {exc}", flush=True)
-            traceback.print_exc()
-            raise PlannerServiceError("Failed to request smart planning provider") from exc
+            logger.warning("Smart planner provider request failed: %s. Using fallback planner", exc)
+            return fallback_steps
 
         content = response.choices[0].message.content if response.choices else None
-        print(f"[SMART_PLANNER] Raw response content: {content!r}", flush=True)
         if not content:
-            raise PlannerServiceError("Planner returned empty response")
+            logger.warning("Smart planner returned empty response, using fallback planner")
+            return fallback_steps
 
         try:
             payload = json.loads(content)
@@ -93,14 +93,35 @@ class SmartPlannerService:
                 else:
                     continue
         except (KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
-            print(f"[SMART_PLANNER] Parse failed: {exc}, content was: {content!r}", flush=True)
-            raise PlannerServiceError("Planner returned invalid response format") from exc
+            logger.warning("Smart planner response parse failed: %s. Using fallback planner", exc)
+            return fallback_steps
 
         normalized_steps = [step for step in steps if step.title]
         if not normalized_steps:
-            raise PlannerServiceError("Planner returned no usable steps")
-        print(f"[SMART_PLANNER] Success: {len(normalized_steps)} steps generated", flush=True)
+            logger.warning("Smart planner returned no usable steps, using fallback planner")
+            return fallback_steps
+
         return normalized_steps
+
+    def _generate_fallback_steps(self, title: str, description: str | None) -> list[StepData]:
+        details = [item.strip(" .,-") for item in (description or "").split(".") if item.strip()]
+        base_steps = [
+            f"Прочитай задание: {title.strip()}",
+            "Собери нужные материалы и формулы",
+        ]
+
+        if details:
+            base_steps.append(f"Сделай основную часть: {details[0]}")
+        else:
+            base_steps.append("Выполни основную часть задания")
+
+        base_steps.extend(
+            [
+                "Проверь ответ и исправь ошибки",
+                "Подготовь итоговую версию для сдачи",
+            ]
+        )
+        return [StepData(title=step, order=index) for index, step in enumerate(base_steps, start=1)]
 
 
 smart_planner_service = SmartPlannerService()
