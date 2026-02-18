@@ -72,3 +72,16 @@
 ## Notes
 - Добавлена схема `AIMaterialsResponse` в `schemas/materials.py`.
 - Для web-поиска добавлена зависимость `duckduckgo-search`.
+
+## Notes (2026-02-18 schedule/reminders/planner fixes)
+
+## Models
+- `ScheduleSlot` schema now uses the API field `room` for both input and output; legacy payloads with `room_number` are still accepted through validation aliases.
+- `ReminderRead` contract remains nested (`homework` object + `is_sent`) and is now consumed directly on frontend without client-side rejoin logic.
+
+## Services
+- `smart_planner` now requests OpenRouter responses with `response_format={"type":"json_object"}` for wider model compatibility.
+- `smart_planner` logs provider failures with traceback before raising `PlannerServiceError`.
+
+## Notes
+- Schedule CRUD mapping no longer remaps `room_number -> room`; persistence uses schema field names directly.

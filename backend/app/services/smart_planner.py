@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import json
+import logging
 from dataclasses import dataclass
 from datetime import date
 
 from openai import AsyncOpenAI
 
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class PlannerServiceError(Exception):
@@ -36,32 +39,8 @@ class SmartPlannerService:
         if not settings.openrouter_api_key:
             raise PlannerServiceError("OpenRouter API key is not configured")
 
-        response_format = {
-            "type": "json_schema",
-            "json_schema": {
-                "name": "homework_steps",
-                "strict": True,
-                "schema": {
-                    "type": "object",
-                    "properties": {
-                        "steps": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "title": {"type": "string"},
-                                    "order": {"type": "integer"},
-                                },
-                                "required": ["title", "order"],
-                                "additionalProperties": False,
-                            },
-                        }
-                    },
-                    "required": ["steps"],
-                    "additionalProperties": False,
-                },
-            },
-        }
+        response_format = {"type": "json_object"}
+
 
         prompt = (
             "Разбей это домашнее задание на 3-7 конкретных шагов. "
@@ -86,6 +65,7 @@ class SmartPlannerService:
                 ],
             )
         except Exception as exc:  # noqa: BLE001
+            logger.error("Smart planner failed: %s", exc, exc_info=True)
             raise PlannerServiceError("Failed to request smart planning provider") from exc
 
         content = response.choices[0].message.content if response.choices else None

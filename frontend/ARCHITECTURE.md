@@ -197,72 +197,82 @@
 - Dashboard keeps quick actions and hero section static while backend-driven metrics update asynchronously.
 - Playwright dashboard spec now mocks newly used dashboard endpoints in addition to reminder polling.
 
-
 ## Notes (2026-02-18 smart homework steps)
 
 ## Functions
+
 - `useHomeworkStore` в `store/homework.ts` получил действия `generateSteps(homeworkId)` и `toggleStep(stepId)` плюс состояние `isGeneratingByHomeworkId` для per-card loading.
 - `HomeworkCard` в `components/homework/homework-card.tsx` получил кнопку `Сгенерировать шаги`, loader-состояние и чеклист шагов с переключением.
 - `HomeworkList` и `HomeworkPageClient` прокидывают новые обработчики генерации/переключения шагов до карточек.
 
 ## Types
+
 - `HomeworkStep` в `types/homework.ts` использует backend-поля `order` и `is_completed`.
 - Добавлен `GenerateStepsResponse` для ответа `POST /api/v1/homework/{id}/generate-steps`.
 
 ## Data Flow
+
 1. Пользователь нажимает `Сгенерировать шаги` в карточке ДЗ.
 2. Store вызывает `POST /api/v1/homework/{id}/generate-steps`, показывает loader конкретной карточки, затем обновляет список ДЗ.
 3. Пользователь отмечает шаг в чеклисте.
 4. Store вызывает `PATCH /api/v1/homework/steps/{step_id}/toggle` и перезапрашивает список ДЗ.
 
 ## Notes
-- Для локального mock режима добавлены обработчики `generate-steps` и `toggle-step` в `lib/mock-api-routes.ts`.
 
+- Для локального mock режима добавлены обработчики `generate-steps` и `toggle-step` в `lib/mock-api-routes.ts`.
 
 ## Notes (2026-02-18 ai materials recommendation)
 
 ## Functions
+
 - `useMaterialStore` в `store/materials.ts` хранит `recommendation` и обрабатывает новый backend-контракт `AIMaterialsResponse` для ручного поиска и материалов по ДЗ.
 - `MaterialsPageClient` в `components/materials/materials-page-client.tsx` отображает блок `AI-рекомендация` при непустом поле `recommendation`.
 - `MaterialCard` в `components/materials/material-card.tsx` показывает `description` и поддерживает source `website` с иконкой `IconWorld`.
 
 ## Types
+
 - `AIMaterialsResponse` добавлен в `types/materials.ts`.
 - `Material` расширен полем `description`, а `MaterialSource` — значением `website`.
 
 ## Data Flow
+
 1. Поиск материалов получает ответ `AIMaterialsResponse` с `materials[]` и `recommendation`.
 2. Zustand store сохраняет материалы и AI-рекомендацию в единый state.
 3. Страница материалов рендерит рекомендацию над списком карточек.
 
 ## Notes
+
 - Тесты обновлены для store и компонентов материалов под новый контракт ответа.
 
 ## Notes (2026-02-18 frontend ux/api fixes)
 
 ## Functions
+
 - `DashboardPageClient` в `components/dashboard/dashboard-page-client.tsx` получил интерактивные быстрые действия с `router.push()` и focus/hover-состояниями для клавиатурной и мышиной навигации.
 - `HomeworkCard`, `HomeworkList` и `HomeworkPageClient` в `components/homework/*` объединяют сценарий завершения ДЗ в кнопку `Сделано`: открывается `MoodPicker`, после отправки оценки выполняется удаление задания.
 - `ScheduleGrid` в `components/schedule/schedule-grid.tsx` использует десктопный горизонтальный контейнер с фиксированной шириной колонок дней и минимальной высотой карточек.
 - `apiClient` и `mockApiClient` в `lib/api-client.ts` и `lib/mock-api-client.ts` получили унифицированные методы `put`, `patch`, `delete`.
 
 ## Types
+
 - Элементы `SUBJECT_COLORS` в `components/schedule/constants.ts` расширены полем `label` для русских названий цветов при сохранении `value` для API-совместимости.
 
 ## Data Flow
+
 1. Быстрые действия на `/` теперь ведут пользователя напрямую на `/homework`, `/reminders`, `/analytics`.
 2. На `/homework` пользователь нажимает `Сделано` → `MoodPicker` отправляет `POST /api/v1/mood` → затем удаление через `DELETE /api/v1/homework/{id}` и рефетч списка.
 3. Сторы расписания и дашборда используют backend-префикс `/api/v1` для предметов и слотов, исключая 404 при отключённом mock.
 4. `resolveMockRequest` поддерживает новые `/api/v1/subjects` и `/api/v1/schedule/slots` (и legacy пути для обратной совместимости).
 
 ## Notes
+
 - Палитра предметов расширена до 14 цветов с русскими подписями в UI менеджера предметов.
 - В `components/layout/header.tsx` удалён неиспользуемый импорт `IconMenu2` для чистого lint-статуса.
-
 
 ## Notes (2026-02-18 api audit alignment)
 
 ## Functions
+
 - `useScheduleStore` и `useDashboardStore` обновили endpoint расписания до `/api/v1/schedule` и больше не используют legacy `/schedule/slots`.
 - `useHomeworkStore.makeQuery` теперь строит backend-совместимые фильтры `subject_id`, `is_completed`, `deadline_from`, `deadline_to`.
 - `useAnalyticsStore` и `useDashboardStore` читают предупреждения из объекта `{ warnings: string[] }`.
@@ -270,6 +280,7 @@
 - `useMaterialStore` отправляет `subject_id` при поиске и использует материал без обязательного `id`.
 
 ## Types
+
 - `ScheduleSlot`/`ScheduleSlotCreate` используют поле `room`.
 - `Homework`/`HomeworkUpdate` используют `is_completed`.
 - `Reminder` использует `is_sent`, а `ReminderUpdate` ограничен полем `remind_at`.
@@ -277,6 +288,7 @@
 - `Material` использует `thumbnail_url` и не требует `id`.
 
 ## Data Flow
+
 1. Schedule CRUD/store и dashboard summary ходят в `/api/v1/schedule` с payload полем `room`.
 2. Homework list фильтрация на API полностью совпадает с Query-параметрами backend и возвращает `is_completed` для UI-фильтрации.
 3. Reminders UI хранит статус через `is_sent`; при редактировании отправляется только `remind_at`.
@@ -284,5 +296,25 @@
 5. Materials search отправляет `subject_id`, карточки используют `thumbnail_url`, key формируется от `url+title`.
 
 ## Notes
+
 - Mock-слой (`mock-data`/`mock-api-routes`) синхронизирован с backend-контрактами и поддерживает новые query-параметры ДЗ и форматы аналитики.
 - Обновлены store/component тесты под новые API-контракты без изменения бизнес-сценариев.
+
+## Notes (2026-02-18 schedule/reminders/header fixes)
+
+## Functions
+
+- `ScheduleForm` now supports `onDeleteSubject` and renders a destructive "Удалить предмет" action in lesson edit mode with confirm dialog.
+- `RemindersPageClient` now renders reminders directly from backend response (`reminder.homework`) and no longer rebuilds a merged list from homework store data.
+- `ReminderEditModal` now uses separate `date` and `time` inputs and composes ISO datetime on submit.
+- `Header` increased stacking order (`z-40`) so `NotificationBell` dropdown is not hidden by content container.
+
+## Types
+
+- `types/reminders.ts` now matches backend payloads: `Reminder` includes nested `homework`, `is_sent`, `created_at`, and `updated_at`.
+- `ReminderUpdate` remains limited to `remind_at` only.
+
+## Data Flow
+
+- Reminder create/update modal submits ISO UTC timestamps derived from separate date/time values.
+- Reminder cards read subject metadata from `reminder.homework.subject.{name,color}`.

@@ -15,11 +15,9 @@ class ScheduleSlotBase(BaseModel):
     day_of_week: int | None = Field(default=None, ge=0, le=6, example=1)
     start_time: time | None = Field(default=None, example="09:00:00")
     end_time: time | None = Field(default=None, example="09:45:00")
-    room_number: str | None = Field(
+    room: str | None = Field(
         default=None,
-        alias="room",
         validation_alias=AliasChoices("room", "room_number"),
-        serialization_alias="room_number",
         example="Кабинет 210",
     )
 
@@ -50,10 +48,6 @@ class ScheduleSlotRead(BaseModel):
     day_of_week: int
     start_time: time
     end_time: time
-    room_number: str | None = Field(
-        alias="room",
-        validation_alias=AliasChoices("room", "room_number"),
-        serialization_alias="room_number",
-    )
+    room: str | None = Field(validation_alias=AliasChoices("room", "room_number"))
     created_at: datetime
     updated_at: datetime

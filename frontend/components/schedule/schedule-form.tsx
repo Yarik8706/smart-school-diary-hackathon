@@ -22,6 +22,7 @@ interface ScheduleFormProps {
   initialSlot?: ScheduleSlot;
   onClose: () => void;
   onSubmit: (payload: ScheduleSlotCreate) => Promise<void>;
+  onDeleteSubject?: (id: string) => Promise<void>;
 }
 
 export default function ScheduleForm({
@@ -31,6 +32,7 @@ export default function ScheduleForm({
   initialSlot,
   onClose,
   onSubmit,
+  onDeleteSubject,
 }: ScheduleFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,6 +49,25 @@ export default function ScheduleForm({
   }, [initialValues]);
 
   if (!isOpen) return null;
+
+  const handleDeleteSubject = async () => {
+    if (!initialSlot || !onDeleteSubject) {
+      return;
+    }
+
+    const selectedSubject = subjects.find(
+      (subject) => subject.id === form.subject_id,
+    );
+    const isConfirmed = window.confirm(
+      `Удалить предмет "${selectedSubject?.name ?? "этот предмет"}"?`,
+    );
+    if (!isConfirmed) {
+      return;
+    }
+
+    await onDeleteSubject(form.subject_id);
+    onClose();
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -75,20 +96,31 @@ export default function ScheduleForm({
           {initialSlot ? "Редактировать урок" : "Добавить урок"}
         </h2>
         <label className="block text-sm">Предмет</label>
-        <select
-          className="w-full rounded-md border p-2"
-          required
-          value={form.subject_id}
-          onChange={(event) =>
-            setForm({ ...form, subject_id: event.target.value })
-          }
-        >
-          {subjects.map((subject) => (
-            <option key={subject.id} value={subject.id}>
-              {subject.name}
-            </option>
-          ))}
-        </select>
+        <div className="flex gap-2">
+          <select
+            className="w-full rounded-md border p-2"
+            required
+            value={form.subject_id}
+            onChange={(event) =>
+              setForm({ ...form, subject_id: event.target.value })
+            }
+          >
+            {subjects.map((subject) => (
+              <option key={subject.id} value={subject.id}>
+                {subject.name}
+              </option>
+            ))}
+          </select>
+          {initialSlot && onDeleteSubject ? (
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => void handleDeleteSubject()}
+            >
+              Удалить предмет
+            </Button>
+          ) : null}
+        </div>
         <label className="block text-sm">День недели</label>
         <select
           className="w-full rounded-md border p-2"
@@ -128,9 +160,7 @@ export default function ScheduleForm({
           placeholder="Кабинет"
           required
           value={form.room}
-          onChange={(event) =>
-            setForm({ ...form, room: event.target.value })
-          }
+          onChange={(event) => setForm({ ...form, room: event.target.value })}
         />
         {error && <p className="text-destructive text-sm">{error}</p>}
         <div className="flex justify-end gap-2">

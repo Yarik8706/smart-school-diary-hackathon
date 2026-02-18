@@ -10,6 +10,8 @@ const makeReminder = (id: string, remindAt: string): ReminderView => ({
   remind_at: remindAt,
   is_sent: false,
   homework: null,
+  created_at: "2026-01-01T00:00:00.000Z",
+  updated_at: "2026-01-01T00:00:00.000Z",
 });
 
 describe("reminder-utils", () => {
