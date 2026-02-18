@@ -32,7 +32,6 @@ export function HomeworkPageClient() {
   const addHomework = useHomeworkStore((state) => state.addHomework);
   const updateHomework = useHomeworkStore((state) => state.updateHomework);
   const deleteHomework = useHomeworkStore((state) => state.deleteHomework);
-  const toggleComplete = useHomeworkStore((state) => state.toggleComplete);
   const generateSteps = useHomeworkStore((state) => state.generateSteps);
   const toggleStep = useHomeworkStore((state) => state.toggleStep);
   const submitMood = useHomeworkStore((state) => state.submitMood);
@@ -86,8 +85,7 @@ export function HomeworkPageClient() {
           setEditOpen(true);
         }}
         onDelete={(id) => void deleteHomework(id)}
-        onToggle={(id) => void toggleComplete(id)}
-        onMood={setMoodHomework}
+        onDone={setMoodHomework}
         onGenerateSteps={(id) => void generateSteps(id)}
         onToggleStep={(id) => void toggleStep(id)}
       />
@@ -109,9 +107,11 @@ export function HomeworkPageClient() {
         open={Boolean(moodHomework)}
         homeworkTitle={moodHomework?.title ?? ""}
         onClose={() => setMoodHomework(null)}
-        onSubmit={(mood, note) =>
-          submitMood(moodHomework?.id ?? "", mood, note)
-        }
+        onSubmit={async (mood, note) => {
+          if (!moodHomework?.id) return;
+          await submitMood(moodHomework.id, mood, note);
+          await deleteHomework(moodHomework.id);
+        }}
       />
     </section>
   );

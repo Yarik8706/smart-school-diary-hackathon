@@ -1,7 +1,7 @@
 import {
+  IconCheck,
   IconChecklist,
   IconLoader2,
-  IconMoodSmile,
   IconPencil,
   IconTrash,
 } from "@tabler/icons-react";
@@ -17,8 +17,7 @@ interface HomeworkCardProps {
   isGeneratingSteps?: boolean;
   onEdit: (homework: Homework) => void;
   onDelete: (id: string) => void;
-  onToggle: (id: string) => void;
-  onMood: (homework: Homework) => void;
+  onDone: (homework: Homework) => void;
   onGenerateSteps: (id: string) => void;
   onToggleStep: (id: string) => void;
 }
@@ -29,8 +28,7 @@ export function HomeworkCard({
   isGeneratingSteps = false,
   onEdit,
   onDelete,
-  onToggle,
-  onMood,
+  onDone,
   onGenerateSteps,
   onToggleStep,
 }: HomeworkCardProps) {
@@ -86,14 +84,9 @@ export function HomeworkCard({
         </div>
       ) : null}
       <div className="flex flex-wrap items-center gap-2">
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={homework.completed}
-            onChange={() => onToggle(homework.id)}
-          />
-          Выполнено
-        </label>
+        <Button size="sm" onClick={() => onDone(homework)}>
+          <IconCheck size={16} /> Сделано
+        </Button>
         <Button
           size="sm"
           variant="outline"
@@ -112,9 +105,6 @@ export function HomeworkCard({
         </Button>
         <Button size="sm" variant="ghost" onClick={() => onEdit(homework)}>
           <IconPencil size={16} /> Редактировать
-        </Button>
-        <Button size="sm" variant="ghost" onClick={() => onMood(homework)}>
-          <IconMoodSmile size={16} /> Оценить сложность
         </Button>
         <Button
           size="sm"

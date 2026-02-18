@@ -237,3 +237,25 @@
 
 ## Notes
 - Тесты обновлены для store и компонентов материалов под новый контракт ответа.
+
+## Notes (2026-02-18 frontend ux/api fixes)
+
+## Functions
+- `DashboardPageClient` в `components/dashboard/dashboard-page-client.tsx` получил интерактивные быстрые действия с `router.push()` и focus/hover-состояниями для клавиатурной и мышиной навигации.
+- `HomeworkCard`, `HomeworkList` и `HomeworkPageClient` в `components/homework/*` объединяют сценарий завершения ДЗ в кнопку `Сделано`: открывается `MoodPicker`, после отправки оценки выполняется удаление задания.
+- `ScheduleGrid` в `components/schedule/schedule-grid.tsx` использует десктопный горизонтальный контейнер с фиксированной шириной колонок дней и минимальной высотой карточек.
+- `apiClient` и `mockApiClient` в `lib/api-client.ts` и `lib/mock-api-client.ts` получили унифицированные методы `put`, `patch`, `delete`.
+
+## Types
+- Элементы `SUBJECT_COLORS` в `components/schedule/constants.ts` расширены полем `label` для русских названий цветов при сохранении `value` для API-совместимости.
+
+## Data Flow
+1. Быстрые действия на `/` теперь ведут пользователя напрямую на `/homework`, `/reminders`, `/analytics`.
+2. На `/homework` пользователь нажимает `Сделано` → `MoodPicker` отправляет `POST /api/v1/mood` → затем удаление через `DELETE /api/v1/homework/{id}` и рефетч списка.
+3. Сторы расписания и дашборда используют backend-префикс `/api/v1` для предметов и слотов, исключая 404 при отключённом mock.
+4. `resolveMockRequest` поддерживает новые `/api/v1/subjects` и `/api/v1/schedule/slots` (и legacy пути для обратной совместимости).
+
+## Notes
+- Палитра предметов расширена до 14 цветов с русскими подписями в UI менеджера предметов.
+- В `components/layout/header.tsx` удалён неиспользуемый импорт `IconMenu2` для чистого lint-статуса.
+

@@ -95,7 +95,7 @@ export const useDashboardStore = create<DashboardStore>((set) => ({
     try {
       const [homework, slots, subjects, warnings] = await Promise.all([
         api.get<Homework[]>("/api/v1/homework"),
-        api.get<ScheduleSlot[]>("/schedule/slots"),
+        api.get<ScheduleSlot[]>("/api/v1/schedule/slots"),
         api.get<Subject[]>("/api/v1/subjects"),
         api.get<WarningItem[]>("/api/v1/analytics/warnings"),
       ]);

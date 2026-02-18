@@ -1,7 +1,5 @@
 "use client";
 
-import { IconMenu2 } from "@tabler/icons-react";
-
 import NotificationBell from "./notification-bell";
 
 interface HeaderProps {
@@ -12,7 +10,6 @@ export default function Header({ title }: HeaderProps) {
   return (
     <header className="border-border/70 bg-card/80 relative z-30 mb-5 flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 backdrop-blur">
       <div className="flex items-center gap-3">
-
         <div>
           <p className="text-primary text-xs font-semibold tracking-[0.15em] uppercase">
             Smart School Diary

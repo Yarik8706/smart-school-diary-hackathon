@@ -13,8 +13,7 @@ interface HomeworkListProps {
   generatingById: Record<string, boolean>;
   onEdit: (homework: Homework) => void;
   onDelete: (id: string) => void;
-  onToggle: (id: string) => void;
-  onMood: (homework: Homework) => void;
+  onDone: (homework: Homework) => void;
   onGenerateSteps: (id: string) => void;
   onToggleStep: (id: string) => void;
 }
@@ -25,8 +24,7 @@ export function HomeworkList({
   generatingById,
   onEdit,
   onDelete,
-  onToggle,
-  onMood,
+  onDone,
   onGenerateSteps,
   onToggleStep,
 }: HomeworkListProps) {
@@ -59,8 +57,7 @@ export function HomeworkList({
           isGeneratingSteps={Boolean(generatingById[item.id])}
           onEdit={onEdit}
           onDelete={onDelete}
-          onToggle={onToggle}
-          onMood={onMood}
+          onDone={onDone}
           onGenerateSteps={onGenerateSteps}
           onToggleStep={onToggleStep}
         />

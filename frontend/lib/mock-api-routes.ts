@@ -47,7 +47,7 @@ export const resolveMockRequest = <T>(endpoint: string, options: ApiRequestOptio
 
   if (method === "GET") {
     if (path === "/subjects" || path === "/api/v1/subjects") return [...state.subjects] as T;
-    if (path === "/schedule/slots") return [...state.schedule] as T;
+    if (path === "/api/v1/schedule/slots" || path === "/schedule/slots") return [...state.schedule] as T;
     if (path === "/api/v1/homework") return filteredHomework(query) as T;
     if (path === "/api/v1/reminders") return [...state.reminders] as T;
     if (path === "/api/v1/analytics/load") return MOCK_ANALYTICS_LOAD as T;
@@ -56,35 +56,35 @@ export const resolveMockRequest = <T>(endpoint: string, options: ApiRequestOptio
     if (path === "/api/v1/reminders/pending") return MOCK_PENDING_REMINDERS as T;
   }
 
-  if (path === "/subjects" && method === "POST") {
+  if ((path === "/api/v1/subjects" || path === "/subjects") && method === "POST") {
     const subject = { id: uid(), ...(body as SubjectCreate) };
     state.subjects.unshift(subject);
     return subject as T;
   }
-  if (path.startsWith("/subjects/") && method === "PUT") {
-    const id = path.replace("/subjects/", "");
+  if ((path.startsWith("/api/v1/subjects/") || path.startsWith("/subjects/")) && method === "PUT") {
+    const id = path.replace("/api/v1/subjects/", "").replace("/subjects/", "");
     state.subjects = state.subjects.map((s) => (s.id === id ? { ...s, ...(body as SubjectUpdate) } : s));
     return state.subjects.find((s) => s.id === id) as T;
   }
-  if (path.startsWith("/subjects/") && method === "DELETE") {
-    const id = path.replace("/subjects/", "");
+  if ((path.startsWith("/api/v1/subjects/") || path.startsWith("/subjects/")) && method === "DELETE") {
+    const id = path.replace("/api/v1/subjects/", "").replace("/subjects/", "");
     state.subjects = state.subjects.filter((s) => s.id !== id);
     state.schedule = state.schedule.filter((slot) => slot.subject_id !== id);
     return undefined as T;
   }
 
-  if (path === "/schedule/slots" && method === "POST") {
+  if ((path === "/api/v1/schedule/slots" || path === "/schedule/slots") && method === "POST") {
     const slot = { id: uid(), ...(body as ScheduleSlotCreate) };
     state.schedule.push(slot);
     return slot as T;
   }
-  if (path.startsWith("/schedule/slots/") && method === "PUT") {
-    const id = path.replace("/schedule/slots/", "");
+  if ((path.startsWith("/api/v1/schedule/slots/") || path.startsWith("/schedule/slots/")) && method === "PUT") {
+    const id = path.replace("/api/v1/schedule/slots/", "").replace("/schedule/slots/", "");
     state.schedule = state.schedule.map((slot) => (slot.id === id ? { ...slot, ...(body as ScheduleSlotUpdate) } : slot));
     return state.schedule.find((slot) => slot.id === id) as T;
   }
-  if (path.startsWith("/schedule/slots/") && method === "DELETE") {
-    state.schedule = state.schedule.filter((slot) => slot.id !== path.replace("/schedule/slots/", ""));
+  if ((path.startsWith("/api/v1/schedule/slots/") || path.startsWith("/schedule/slots/")) && method === "DELETE") {
+    state.schedule = state.schedule.filter((slot) => slot.id !== path.replace("/api/v1/schedule/slots/", "").replace("/schedule/slots/", ""));
     return undefined as T;
   }
 

@@ -121,7 +121,9 @@ test("validates empty homework title", async ({ page }) => {
   await expect(page.getByText("Название обязательно.")).toBeVisible();
 });
 
-test("marks homework as completed", async ({ page }) => {
+test("marks homework as done via mood dialog and removes card", async ({ page }) => {
+  let moodPayload: Record<string, unknown> | null = null;
+  let deleteCalled = false;
   let homework = [
     {
       id: "h1",
@@ -139,13 +141,9 @@ test("marks homework as completed", async ({ page }) => {
   });
 
   await page.route("**/api/v1/homework**", async (route) => {
-    const method = route.request().method();
-    const url = route.request().url();
-
-    if (method === "PATCH" && url.endsWith("/h1/complete")) {
-      homework = homework.map((item) =>
-        item.id === "h1" ? { ...item, completed: true } : item,
-      );
+    if (route.request().method() === "DELETE") {
+      deleteCalled = true;
+      homework = [];
       await route.fulfill({ json: {} });
       return;
     }
@@ -154,13 +152,19 @@ test("marks homework as completed", async ({ page }) => {
   });
 
   await page.route("**/api/v1/mood", async (route) => {
+    moodPayload = route.request().postDataJSON() as Record<string, unknown>;
     await route.fulfill({ json: {} });
   });
 
   await page.goto("/homework");
 
-  await page.getByLabel("Выполнено").click();
-  await expect(page.getByLabel("Выполнено")).toBeChecked();
+  await page.getByRole("button", { name: "Сделано" }).click();
+  await page.getByRole("button", { name: "Легко" }).click();
+  await page.getByRole("button", { name: "Сохранить" }).click();
+
+  await expect.poll(() => moodPayload?.mood as string | undefined).toBe("easy");
+  await expect.poll(() => deleteCalled).toBe(true);
+  await expect(page.getByText("Алгебра №3")).toHaveCount(0);
 });
 
 test("deletes homework card", async ({ page }) => {
@@ -231,7 +235,7 @@ test("submits mood rating", async ({ page }) => {
 
   await page.goto("/homework");
 
-  await page.getByRole("button", { name: "Оценить сложность" }).click();
+  await page.getByRole("button", { name: "Сделано" }).click();
   await page.getByRole("button", { name: "Легко" }).click();
   await page.getByRole("button", { name: "Сохранить" }).click();
 
