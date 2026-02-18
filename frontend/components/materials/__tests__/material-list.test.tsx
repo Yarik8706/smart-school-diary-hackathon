@@ -15,11 +15,10 @@ describe("MaterialList", () => {
       <MaterialList
         materials={[
           {
-            id: "m1",
-            title: "Видео по алгебре",
+                        title: "Видео по алгебре",
             source: "youtube",
             url: "https://youtu.be/abc",
-            thumbnail: "https://img.youtube.com/vi/abc/default.jpg",
+            thumbnail_url: "https://img.youtube.com/vi/abc/default.jpg",
             description: "Разбор типовых заданий",
           },
         ]}

@@ -17,7 +17,7 @@ export function MaterialList({ materials }: MaterialListProps) {
   return (
     <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-label="Результаты поиска">
       {materials.map((material) => (
-        <MaterialCard key={material.id} material={material} />
+        <MaterialCard key={`${material.url}-${material.title}`} material={material} />
       ))}
     </section>
   );

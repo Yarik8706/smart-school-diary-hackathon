@@ -18,7 +18,7 @@ const buildSearchUrl = (query: string, subject?: string) => {
   const params = new URLSearchParams({ query });
 
   if (subject) {
-    params.set("subject", subject);
+    params.set("subject_id", subject);
   }
 
   return `${searchPath}?${params.toString()}`;

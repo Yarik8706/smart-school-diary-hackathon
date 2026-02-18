@@ -48,7 +48,7 @@ export function RemindersPageClient() {
     remind_at: string;
   }) => {
     if (editingReminder) {
-      await updateReminder(editingReminder.id, payload);
+      await updateReminder(editingReminder.id, { remind_at: payload.remind_at });
       setEditingReminder(null);
       return;
     }

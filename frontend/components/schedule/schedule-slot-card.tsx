@@ -38,7 +38,7 @@ export default function ScheduleSlotCard({
           <p className="text-muted-foreground text-xs">
             {slot.start_time} - {slot.end_time}
           </p>
-          <p className="text-xs">Кабинет: {slot.classroom}</p>
+          <p className="text-xs">Кабинет: {slot.room}</p>
         </div>
       </div>
       <div className="mt-auto flex gap-2">

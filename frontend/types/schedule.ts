@@ -17,7 +17,7 @@ export interface ScheduleSlot {
   day_of_week: number;
   start_time: string;
   end_time: string;
-  classroom: string;
+  room: string;
   subject?: Subject;
 }
 
@@ -26,7 +26,7 @@ export interface ScheduleSlotCreate {
   day_of_week: number;
   start_time: string;
   end_time: string;
-  classroom: string;
+  room: string;
 }
 
 export type ScheduleSlotUpdate = Partial<ScheduleSlotCreate>;

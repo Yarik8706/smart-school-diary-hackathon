@@ -28,7 +28,7 @@ interface ScheduleStore {
 }
 
 const subjectPath = "/api/v1/subjects";
-const schedulePath = "/api/v1/schedule/slots";
+const schedulePath = "/api/v1/schedule";
 
 const withLoading = async (
   action: () => Promise<void>,

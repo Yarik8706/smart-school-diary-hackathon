@@ -12,7 +12,7 @@ export const buildInitialSlotValues = (
   day_of_week: initialSlot?.day_of_week ?? 1,
   start_time: initialSlot?.start_time ?? "08:00",
   end_time: initialSlot?.end_time ?? "08:45",
-  classroom: initialSlot?.classroom ?? "",
+  room: initialSlot?.room ?? "",
 });
 
 export const hasSlotOverlap = (

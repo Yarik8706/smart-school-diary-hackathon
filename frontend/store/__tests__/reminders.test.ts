@@ -35,7 +35,7 @@ describe("useReminderStore", () => {
           id: "1",
           homework_id: "h1",
           remind_at: "2026-01-01",
-          status: "pending",
+          is_sent: false,
         },
       ])
       .mockResolvedValueOnce([

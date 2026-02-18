@@ -1,6 +1,9 @@
 export interface WeekLoadDay {
-  day: string;
-  load: number;
+  day: number;
+  load_score: number;
+  lessons_count: number;
+  hard_subjects: string[];
+  warning: string | null;
 }
 
 export interface WeekLoadAnalysis {
@@ -8,14 +11,11 @@ export interface WeekLoadAnalysis {
 }
 
 export interface MoodStats {
-  easy: number;
-  normal: number;
-  hard: number;
+  easy_count: number;
+  normal_count: number;
+  hard_count: number;
 }
 
-export interface WarningItem {
-  id: string;
-  day: string;
-  message: string;
-  recommendation: string;
+export interface WarningsResponse {
+  warnings: string[];
 }

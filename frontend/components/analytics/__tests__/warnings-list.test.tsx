@@ -19,8 +19,8 @@ describe("WarningsList", () => {
     );
 
     expect(screen.getByText("Предупреждения")).toBeInTheDocument();
-    expect(screen.getByText("Пятница")).toBeInTheDocument();
-    expect(screen.getByText("Рекомендация: Раздели на части")).toBeInTheDocument();
+    expect(screen.getByText(/Пятница/)).toBeInTheDocument();
+    expect(screen.getByText(/Раздели на части/)).toBeInTheDocument();
   });
 
   it("renders empty state", () => {

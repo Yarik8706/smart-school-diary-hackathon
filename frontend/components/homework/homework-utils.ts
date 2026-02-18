@@ -41,8 +41,8 @@ export const filterHomework = (
   items.filter((item) => {
     if (filters.subject !== "all" && item.subject_id !== filters.subject)
       return false;
-    if (filters.status === "completed" && !item.completed) return false;
-    if (filters.status === "active" && item.completed) return false;
+    if (filters.status === "completed" && !item.is_completed) return false;
+    if (filters.status === "active" && item.is_completed) return false;
     return matchesDeadline(item.deadline, filters.deadline, now);
   });
 

@@ -1,12 +1,11 @@
 export type MaterialSource = "youtube" | "article" | "website";
 
 export interface Material {
-  id: string;
   title: string;
   source: MaterialSource;
   url: string;
   description?: string;
-  thumbnail?: string;
+  thumbnail_url?: string;
 }
 
 export interface AIMaterialsResponse {

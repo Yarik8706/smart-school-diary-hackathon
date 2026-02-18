@@ -11,14 +11,14 @@ interface ReminderCardProps {
   onDelete: (id: string) => void;
 }
 
-const statusClass: Record<ReminderView["status"], string> = {
-  pending: "bg-blue-500/20 text-blue-700",
-  sent: "bg-zinc-400/20 text-zinc-600",
+const statusClass = {
+  false: "bg-blue-500/20 text-blue-700",
+  true: "bg-zinc-400/20 text-zinc-600",
 };
 
-const statusText: Record<ReminderView["status"], string> = {
-  pending: uiText.reminders.status.pending,
-  sent: uiText.reminders.status.sent,
+const statusText = {
+  false: uiText.reminders.status.pending,
+  true: uiText.reminders.status.sent,
 };
 
 const subjectDot: Record<string, string> = {
@@ -51,10 +51,10 @@ export function ReminderCard({
         <span
           className={cn(
             "rounded-full px-2 py-1 text-xs font-semibold",
-            statusClass[reminder.status],
+            statusClass[String(reminder.is_sent) as "false" | "true"],
           )}
         >
-          {statusText[reminder.status]}
+          {statusText[String(reminder.is_sent) as "false" | "true"]}
         </span>
       </div>
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">

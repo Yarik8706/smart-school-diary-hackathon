@@ -34,9 +34,17 @@ const state = {
 
 const filteredHomework = (query: URLSearchParams) => {
   let items = [...state.homework];
-  if (query.get("subject")) items = items.filter((i) => i.subject_id === query.get("subject"));
-  if (query.get("status") === "completed") items = items.filter((i) => i.completed);
-  if (query.get("status") === "active") items = items.filter((i) => !i.completed);
+  const subjectId = query.get("subject_id");
+  const isCompleted = query.get("is_completed");
+  const deadlineFrom = query.get("deadline_from");
+  const deadlineTo = query.get("deadline_to");
+
+  if (subjectId) items = items.filter((item) => item.subject_id === subjectId);
+  if (isCompleted === "true") items = items.filter((item) => item.is_completed);
+  if (isCompleted === "false") items = items.filter((item) => !item.is_completed);
+  if (deadlineFrom) items = items.filter((item) => item.deadline >= deadlineFrom);
+  if (deadlineTo) items = items.filter((item) => item.deadline <= deadlineTo);
+
   return items;
 };
 
@@ -47,12 +55,12 @@ export const resolveMockRequest = <T>(endpoint: string, options: ApiRequestOptio
 
   if (method === "GET") {
     if (path === "/subjects" || path === "/api/v1/subjects") return [...state.subjects] as T;
-    if (path === "/api/v1/schedule/slots" || path === "/schedule/slots") return [...state.schedule] as T;
+    if (path === "/api/v1/schedule" || path === "/schedule") return [...state.schedule] as T;
     if (path === "/api/v1/homework") return filteredHomework(query) as T;
     if (path === "/api/v1/reminders") return [...state.reminders] as T;
     if (path === "/api/v1/analytics/load") return MOCK_ANALYTICS_LOAD as T;
     if (path === "/api/v1/mood/stats") return MOCK_MOOD_STATS as T;
-    if (path === "/api/v1/analytics/warnings") return MOCK_WARNINGS as T;
+    if (path === "/api/v1/analytics/warnings") return { warnings: MOCK_WARNINGS } as T;
     if (path === "/api/v1/reminders/pending") return MOCK_PENDING_REMINDERS as T;
   }
 
@@ -73,29 +81,32 @@ export const resolveMockRequest = <T>(endpoint: string, options: ApiRequestOptio
     return undefined as T;
   }
 
-  if ((path === "/api/v1/schedule/slots" || path === "/schedule/slots") && method === "POST") {
+  if ((path === "/api/v1/schedule" || path === "/schedule") && method === "POST") {
     const slot = { id: uid(), ...(body as ScheduleSlotCreate) };
     state.schedule.push(slot);
     return slot as T;
   }
-  if ((path.startsWith("/api/v1/schedule/slots/") || path.startsWith("/schedule/slots/")) && method === "PUT") {
-    const id = path.replace("/api/v1/schedule/slots/", "").replace("/schedule/slots/", "");
+  if ((path.startsWith("/api/v1/schedule/") || path.startsWith("/schedule/")) && method === "PUT") {
+    const id = path.replace("/api/v1/schedule/", "").replace("/schedule/", "");
     state.schedule = state.schedule.map((slot) => (slot.id === id ? { ...slot, ...(body as ScheduleSlotUpdate) } : slot));
     return state.schedule.find((slot) => slot.id === id) as T;
   }
-  if ((path.startsWith("/api/v1/schedule/slots/") || path.startsWith("/schedule/slots/")) && method === "DELETE") {
-    state.schedule = state.schedule.filter((slot) => slot.id !== path.replace("/api/v1/schedule/slots/", "").replace("/schedule/slots/", ""));
+  if ((path.startsWith("/api/v1/schedule/") || path.startsWith("/schedule/")) && method === "DELETE") {
+    const id = path.replace("/api/v1/schedule/", "").replace("/schedule/", "");
+    state.schedule = state.schedule.filter((slot) => slot.id !== id);
     return undefined as T;
   }
 
   if (path === "/api/v1/homework" && method === "POST") {
-    const item = { id: uid(), completed: false, ...(body as HomeworkCreate) };
+    const item = { id: uid(), is_completed: false, ...(body as HomeworkCreate) };
     state.homework.unshift(item);
     return item as T;
   }
   if (path.endsWith("/complete") && method === "PATCH") {
     const id = path.replace("/api/v1/homework/", "").replace("/complete", "");
-    state.homework = state.homework.map((i) => (i.id === id ? { ...i, completed: !i.completed } : i));
+    state.homework = state.homework.map((item) =>
+      item.id === id ? { ...item, is_completed: !item.is_completed } : item,
+    );
     return undefined as T;
   }
   if (path.endsWith("/generate-steps") && method === "POST") {
@@ -106,9 +117,7 @@ export const resolveMockRequest = <T>(endpoint: string, options: ApiRequestOptio
       { id: uid(), title: "Составить короткий план решения", order: 2, is_completed: false },
       { id: uid(), title: "Проверить и оформить ответ", order: 3, is_completed: false },
     ];
-    if (target) {
-      Object.assign(target, { steps });
-    }
+    if (target) Object.assign(target, { steps });
     return { steps, count: steps.length } as T;
   }
   if (path.includes("/steps/") && path.endsWith("/toggle") && method === "PATCH") {
@@ -123,34 +132,40 @@ export const resolveMockRequest = <T>(endpoint: string, options: ApiRequestOptio
   }
   if (path.startsWith("/api/v1/homework/") && method === "PUT") {
     const id = path.replace("/api/v1/homework/", "");
-    state.homework = state.homework.map((i) => (i.id === id ? { ...i, ...(body as object) } : i));
-    return state.homework.find((i) => i.id === id) as T;
+    state.homework = state.homework.map((item) => (item.id === id ? { ...item, ...(body as object) } : item));
+    return state.homework.find((item) => item.id === id) as T;
   }
   if (path.startsWith("/api/v1/homework/") && method === "DELETE") {
     const id = path.replace("/api/v1/homework/", "");
-    state.homework = state.homework.filter((i) => i.id !== id);
-    state.reminders = state.reminders.filter((r) => r.homework_id !== id);
+    state.homework = state.homework.filter((item) => item.id !== id);
+    state.reminders = state.reminders.filter((reminder) => reminder.homework_id !== id);
     return undefined as T;
   }
 
   if (path === "/api/v1/mood" && method === "POST") {
     const payload = body as { homework_id: string; mood: MoodLevel };
-    if (payload.mood === "easy") state.homework = state.homework.map((i) => (i.id === payload.homework_id ? { ...i, completed: true } : i));
+    if (payload.mood === "easy") {
+      state.homework = state.homework.map((item) =>
+        item.id === payload.homework_id ? { ...item, is_completed: true } : item,
+      );
+    }
     return undefined as T;
   }
 
   if (path === "/api/v1/reminders" && method === "POST") {
-    const item = { id: uid(), status: "pending" as const, ...(body as ReminderCreate) };
+    const item = { id: uid(), is_sent: false, ...(body as ReminderCreate) };
     state.reminders.unshift(item);
     return item as T;
   }
   if (path.startsWith("/api/v1/reminders/") && method === "PUT") {
     const id = path.replace("/api/v1/reminders/", "");
-    state.reminders = state.reminders.map((r) => (r.id === id ? { ...r, ...(body as ReminderUpdate) } : r));
-    return state.reminders.find((r) => r.id === id) as T;
+    state.reminders = state.reminders.map((reminder) =>
+      reminder.id === id ? { ...reminder, ...(body as ReminderUpdate) } : reminder,
+    );
+    return state.reminders.find((reminder) => reminder.id === id) as T;
   }
   if (path.startsWith("/api/v1/reminders/") && method === "DELETE") {
-    state.reminders = state.reminders.filter((r) => r.id !== path.replace("/api/v1/reminders/", ""));
+    state.reminders = state.reminders.filter((reminder) => reminder.id !== path.replace("/api/v1/reminders/", ""));
     return undefined as T;
   }
 

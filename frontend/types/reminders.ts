@@ -1,5 +1,3 @@
-export type ReminderStatus = "pending" | "sent";
-
 export interface Homework {
   id: string;
   title: string;
@@ -11,7 +9,7 @@ export interface Reminder {
   id: string;
   homework_id: string;
   remind_at: string;
-  status: ReminderStatus;
+  is_sent: boolean;
 }
 
 export interface ReminderCreate {
@@ -20,9 +18,7 @@ export interface ReminderCreate {
 }
 
 export interface ReminderUpdate {
-  homework_id?: string;
   remind_at?: string;
-  status?: ReminderStatus;
 }
 
 export interface ReminderView extends Reminder {

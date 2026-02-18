@@ -19,7 +19,7 @@ export interface Homework {
   title: string;
   description?: string;
   deadline: string;
-  completed: boolean;
+  is_completed: boolean;
   steps?: HomeworkStep[];
 }
 
@@ -35,7 +35,7 @@ export interface HomeworkUpdate {
   title?: string;
   description?: string;
   deadline?: string;
-  completed?: boolean;
+  is_completed?: boolean;
 }
 
 export interface GenerateStepsResponse {

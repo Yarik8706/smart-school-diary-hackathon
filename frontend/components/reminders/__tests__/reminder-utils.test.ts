@@ -8,7 +8,7 @@ const makeReminder = (id: string, remindAt: string): ReminderView => ({
   id,
   homework_id: `h-${id}`,
   remind_at: remindAt,
-  status: "pending",
+  is_sent: false,
   homework: null,
 });
 

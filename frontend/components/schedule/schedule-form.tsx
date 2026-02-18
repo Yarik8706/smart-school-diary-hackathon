@@ -127,9 +127,9 @@ export default function ScheduleForm({
           className="w-full rounded-md border p-2"
           placeholder="Кабинет"
           required
-          value={form.classroom}
+          value={form.room}
           onChange={(event) =>
-            setForm({ ...form, classroom: event.target.value })
+            setForm({ ...form, room: event.target.value })
           }
         />
         {error && <p className="text-destructive text-sm">{error}</p>}

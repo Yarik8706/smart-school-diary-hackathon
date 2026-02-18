@@ -1,12 +1,12 @@
 import { create } from "zustand";
 
 import { api } from "@/lib/api-client";
-import type { MoodStats, WarningItem, WeekLoadAnalysis } from "@/types/analytics";
+import type { MoodStats, WarningsResponse, WeekLoadAnalysis } from "@/types/analytics";
 
 interface AnalyticsStore {
   weekLoad: WeekLoadAnalysis | null;
   moodStats: MoodStats | null;
-  warnings: WarningItem[];
+  warnings: string[];
   isLoadingWeekLoad: boolean;
   isLoadingMoodStats: boolean;
   isLoadingWarnings: boolean;
@@ -49,8 +49,8 @@ export const useAnalyticsStore = create<AnalyticsStore>((set) => ({
   fetchWarnings: async () => {
     set({ isLoadingWarnings: true });
     try {
-      const warnings = await api.get<WarningItem[]>("/api/v1/analytics/warnings");
-      set({ warnings, error: null });
+      const warnings = await api.get<WarningsResponse>("/api/v1/analytics/warnings");
+      set({ warnings: warnings.warnings, error: null });
     } catch {
       set({ error: "Не удалось загрузить предупреждения." });
     } finally {
