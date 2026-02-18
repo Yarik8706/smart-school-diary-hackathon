@@ -131,3 +131,32 @@
 - Homework card action hierarchy updated (`Оценить сложность` moved to ghost style), completion indicator simplified to a single checkbox mode.
 - Homework filters now keep equal full-width controls and shift to a balanced two-row layout on smaller screens.
 - Analytics warnings received tone-based styling (`warning`/`danger`/`info`) to reduce always-red emphasis.
+
+## Notes (2026-02-18 materials search)
+
+## Functions
+
+- `MaterialsPage` in `app/materials/page.tsx` now delegates route rendering to the client container `MaterialsPageClient`.
+- `MaterialsPageClient` in `components/materials/materials-page-client.tsx` binds `useMaterialStore` actions/state to UI blocks (`MaterialSearch`, `MaterialList`) and displays loading/error search feedback.
+- `MaterialSearch` in `components/materials/material-search.tsx` manages query/subject inputs, triggers debounced search after 300ms, and supports immediate search via the `Найти` button.
+- `MaterialList` in `components/materials/material-list.tsx` renders a responsive cards grid or empty-state placeholder.
+- `MaterialCard` in `components/materials/material-card.tsx` visualizes source type (YouTube/Article) with Tabler icons, optional thumbnail, and an external open link.
+- `useMaterialStore` in `store/materials.ts` implements `/api/v1/materials/search` and `/api/v1/homework/{id}/materials` integration with loading/error state handling.
+
+## Types
+
+- `MaterialSource` and `Material` in `types/materials.ts` define source discriminator and material data contract used across store/UI/tests.
+- `MaterialStore` in `store/materials.ts` defines state/actions for manual topic search and homework materials fetch.
+
+## Data Flow
+
+1. `/materials` route renders `MaterialsPageClient`.
+2. User enters search text/subject in `MaterialSearch`.
+3. `MaterialSearch` invokes `searchMaterials(query, subject)` from Zustand after debounce (or button click).
+4. `useMaterialStore` performs GET request to `/api/v1/materials/search?query=&subject=` and updates `materials`, `loading`, `error`.
+5. `MaterialList` maps `materials` to `MaterialCard` or renders `Ничего не найдено` when result is empty.
+
+## Notes
+
+- TDD coverage added for materials store and UI components in `store/__tests__/materials.test.ts`, `components/materials/__tests__/material-search.test.tsx`, and `components/materials/__tests__/material-list.test.tsx`.
+- Playwright smoke coverage for `/materials` search flow added in `tests/materials.spec.ts` (requires Playwright browser binaries in environment).
