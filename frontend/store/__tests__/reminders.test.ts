@@ -36,14 +36,20 @@ describe("useReminderStore", () => {
           homework_id: "h1",
           remind_at: "2026-01-01",
           is_sent: false,
+          homework: {
+            id: "h1",
+            title: "Алгебра",
+            subject: { name: "Математика", color: "bg-blue-500" },
+          },
+          created_at: "2026-01-01T00:00:00.000Z",
+          updated_at: "2026-01-01T00:00:00.000Z",
         },
       ])
       .mockResolvedValueOnce([
         {
           id: "h1",
           title: "Алгебра",
-          subject: "Математика",
-          subject_color: "bg-blue-500",
+          subject: { name: "Математика", color: "bg-blue-500" },
         },
       ]);
 

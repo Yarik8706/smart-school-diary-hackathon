@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { IconBellPlus } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 import { useReminderStore } from "@/store/reminders";
 import { uiText } from "@/lib/i18n";
-import type { ReminderView } from "@/types/reminders";
+import type {
+  ReminderCreate,
+  ReminderUpdate,
+  ReminderView,
+} from "@/types/reminders";
 
 import { ReminderEditModal } from "./reminder-edit-modal";
 import { ReminderList } from "./reminder-list";
@@ -31,28 +35,13 @@ export function RemindersPageClient() {
     void Promise.all([fetchReminders(), fetchHomework()]);
   }, [fetchReminders, fetchHomework]);
 
-  const reminderViews = useMemo(
-    () =>
-      sortByClosest(
-        reminders.map((item) => ({
-          ...item,
-          homework:
-            homework.find((entry) => entry.id === item.homework_id) ?? null,
-        })),
-      ),
-    [reminders, homework],
-  );
-
-  const onSubmit = async (payload: {
-    homework_id: string;
-    remind_at: string;
-  }) => {
+  const onSubmit = async (payload: ReminderCreate | ReminderUpdate) => {
     if (editingReminder) {
-      await updateReminder(editingReminder.id, { remind_at: payload.remind_at });
+      await updateReminder(editingReminder.id, payload as ReminderUpdate);
       setEditingReminder(null);
       return;
     }
-    await addReminder(payload);
+    await addReminder(payload as ReminderCreate);
   };
 
   return (
@@ -77,7 +66,7 @@ export function RemindersPageClient() {
         <p className="text-muted-foreground text-sm">{uiText.common.loading}</p>
       ) : null}
       <ReminderList
-        reminders={reminderViews}
+        reminders={sortByClosest(reminders)}
         onEdit={(reminder) => {
           setEditingReminder(reminder);
           setModalOpen(true);

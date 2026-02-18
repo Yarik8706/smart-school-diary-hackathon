@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 
 import ModalOverlay from "@/components/common/modal-overlay";
 import { Button } from "@/components/ui/button";
@@ -12,16 +12,24 @@ interface ReminderEditModalProps {
   reminder: ReminderView | null;
   onClose: () => void;
   onSubmit: (payload: {
-    homework_id: string;
+    homework_id?: string;
     remind_at: string;
   }) => Promise<void>;
 }
 
-const toInputValue = (isoDate?: string) => {
-  if (!isoDate) return "";
+const splitIsoDateTime = (isoDate?: string) => {
+  if (!isoDate) {
+    return { dateValue: "", timeValue: "" };
+  }
+
   const date = new Date(isoDate);
   const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
-  return local.toISOString().slice(0, 16);
+  const [dateValue, timeValue = ""] = local
+    .toISOString()
+    .slice(0, 16)
+    .split("T");
+
+  return { dateValue, timeValue };
 };
 
 export function ReminderEditModal({
@@ -31,10 +39,16 @@ export function ReminderEditModal({
   onClose,
   onSubmit,
 }: ReminderEditModalProps) {
+  const initialDateTime = useMemo(
+    () => splitIsoDateTime(reminder?.remind_at),
+    [reminder?.remind_at],
+  );
+
   const [homeworkId, setHomeworkId] = useState(
     reminder?.homework_id ?? homework[0]?.id ?? "",
   );
-  const [remindAt, setRemindAt] = useState(toInputValue(reminder?.remind_at));
+  const [dateValue, setDateValue] = useState(initialDateTime.dateValue);
+  const [timeValue, setTimeValue] = useState(initialDateTime.timeValue);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setSubmitting] = useState(false);
 
@@ -42,14 +56,18 @@ export function ReminderEditModal({
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!homeworkId || !isFutureDate(remindAt)) {
+
+    const combinedDateTime =
+      dateValue && timeValue ? `${dateValue}T${timeValue}` : "";
+    if ((!reminder && !homeworkId) || !isFutureDate(combinedDateTime)) {
       setError("Укажите задание и время в будущем.");
       return;
     }
+
     setSubmitting(true);
     await onSubmit({
-      homework_id: homeworkId,
-      remind_at: new Date(remindAt).toISOString(),
+      homework_id: reminder ? undefined : homeworkId,
+      remind_at: new Date(combinedDateTime).toISOString(),
     });
     setSubmitting(false);
     onClose();
@@ -70,6 +88,7 @@ export function ReminderEditModal({
             className="bg-background w-full rounded-md border px-3 py-2"
             value={homeworkId}
             onChange={(event) => setHomeworkId(event.target.value)}
+            disabled={Boolean(reminder)}
           >
             <option value="">Выберите задание</option>
             {homework.map((item) => (
@@ -79,15 +98,26 @@ export function ReminderEditModal({
             ))}
           </select>
         </label>
-        <label className="block space-y-2 text-sm font-medium">
-          Время напоминания
-          <input
-            type="datetime-local"
-            className="bg-background w-full rounded-md border px-3 py-2"
-            value={remindAt}
-            onChange={(event) => setRemindAt(event.target.value)}
-          />
-        </label>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="block space-y-2 text-sm font-medium">
+            Дата
+            <input
+              type="date"
+              className="bg-background w-full rounded-md border px-3 py-2"
+              value={dateValue}
+              onChange={(event) => setDateValue(event.target.value)}
+            />
+          </label>
+          <label className="block space-y-2 text-sm font-medium">
+            Время
+            <input
+              type="time"
+              className="bg-background w-full rounded-md border px-3 py-2"
+              value={timeValue}
+              onChange={(event) => setTimeValue(event.target.value)}
+            />
+          </label>
+        </div>
         {error ? <p className="text-destructive text-sm">{error}</p> : null}
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onClose}>
