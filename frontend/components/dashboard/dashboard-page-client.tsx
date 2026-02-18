@@ -2,13 +2,18 @@
 
 import { useEffect } from "react";
 import { IconBolt, IconChartBar, IconChecklist } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 
 import { useDashboardStore } from "@/store/dashboard";
 
 const quickActions = [
-  { label: "Добавить новое ДЗ", Icon: IconChecklist },
-  { label: "Поставить напоминание", Icon: IconBolt },
-  { label: "Проверить нагрузку недели", Icon: IconChartBar },
+  { label: "Добавить новое ДЗ", Icon: IconChecklist, href: "/homework" },
+  { label: "Поставить напоминание", Icon: IconBolt, href: "/reminders" },
+  {
+    label: "Проверить нагрузку недели",
+    Icon: IconChartBar,
+    href: "/analytics",
+  },
 ];
 
 const formatDate = (value: string) => {
@@ -24,6 +29,7 @@ const formatDate = (value: string) => {
 };
 
 export default function DashboardPageClient() {
+  const router = useRouter();
   const { summary, isLoading, error, fetchDashboard } = useDashboardStore();
 
   useEffect(() => {
@@ -57,10 +63,16 @@ export default function DashboardPageClient() {
         <article className="border-border/70 bg-card rounded-3xl border p-6">
           <h3 className="text-lg font-bold">Быстрые действия</h3>
           <ul className="mt-4 space-y-3 text-sm">
-            {quickActions.map(({ label, Icon }) => (
-              <li key={label} className="flex items-center gap-2">
-                <Icon size={16} className="text-primary" />
-                <span>{label}</span>
+            {quickActions.map(({ label, Icon, href }) => (
+              <li key={label}>
+                <button
+                  type="button"
+                  className="hover:bg-muted focus-visible:ring-ring flex w-full cursor-pointer items-center gap-2 rounded-lg p-2 text-left focus-visible:ring-2 focus-visible:outline-none"
+                  onClick={() => router.push(href)}
+                >
+                  <Icon size={16} className="text-primary" />
+                  <span>{label}</span>
+                </button>
               </li>
             ))}
           </ul>

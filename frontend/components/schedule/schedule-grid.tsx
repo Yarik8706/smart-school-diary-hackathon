@@ -62,32 +62,35 @@ export default function ScheduleGrid({
       </div>
 
       <div className="hidden md:block">
-        <div className="grid grid-cols-5 gap-3">
-          {WEEK_DAYS.slice(0, 5).map((day) => {
-            const daySlots = getSlotsByDay(day.value);
-            return (
-              <article
-                key={day.value}
-                className="bg-card/40 space-y-3 rounded-xl border p-3"
-              >
-                <h3 className="text-lg font-semibold">{day.label}</h3>
-                {daySlots.map((slot) => (
-                  <ScheduleSlotCard
-                    key={slot.id}
-                    onDelete={onDelete}
-                    onEdit={onEdit}
-                    slot={slot}
-                    subject={subjects.find(
-                      (subject) => subject.id === slot.subject_id,
-                    )}
-                  />
-                ))}
-                {!daySlots.length && (
-                  <p className="text-muted-foreground text-sm">Нет уроков</p>
-                )}
-              </article>
-            );
-          })}
+        <div className="overflow-x-auto pb-2">
+          <div className="flex min-h-[400px] gap-3">
+            {WEEK_DAYS.slice(0, 5).map((day) => {
+              const daySlots = getSlotsByDay(day.value);
+              return (
+                <article
+                  key={day.value}
+                  className="bg-card/40 min-h-[400px] w-[220px] min-w-[220px] space-y-3 rounded-xl border p-3"
+                >
+                  <h3 className="text-lg font-semibold">{day.label}</h3>
+                  {daySlots.map((slot) => (
+                    <div key={slot.id} className="min-h-[120px]">
+                      <ScheduleSlotCard
+                        onDelete={onDelete}
+                        onEdit={onEdit}
+                        slot={slot}
+                        subject={subjects.find(
+                          (subject) => subject.id === slot.subject_id,
+                        )}
+                      />
+                    </div>
+                  ))}
+                  {!daySlots.length && (
+                    <p className="text-muted-foreground text-sm">Нет уроков</p>
+                  )}
+                </article>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

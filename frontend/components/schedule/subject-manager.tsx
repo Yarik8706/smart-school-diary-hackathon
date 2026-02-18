@@ -68,7 +68,7 @@ export default function SubjectManager({
           >
             {SUBJECT_COLORS.map((item) => (
               <option key={item.value} value={item.value}>
-                {item.value}
+                {item.label}
               </option>
             ))}
           </select>

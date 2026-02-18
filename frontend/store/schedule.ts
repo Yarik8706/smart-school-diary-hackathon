@@ -27,8 +27,8 @@ interface ScheduleStore {
   setSelectedDay: (day: number | null) => void;
 }
 
-const subjectPath = "/subjects";
-const schedulePath = "/schedule/slots";
+const subjectPath = "/api/v1/subjects";
+const schedulePath = "/api/v1/schedule/slots";
 
 const withLoading = async (
   action: () => Promise<void>,
@@ -79,14 +79,11 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     await get().fetchSubjects();
   },
   updateSubject: async (id, data) => {
-    await api.request<Subject>(`${subjectPath}/${id}`, {
-      method: "PUT",
-      body: data,
-    });
+    await api.put<Subject>(`${subjectPath}/${id}`, data);
     await get().fetchSubjects();
   },
   deleteSubject: async (id) => {
-    await api.request<void>(`${subjectPath}/${id}`, { method: "DELETE" });
+    await api.delete<void>(`${subjectPath}/${id}`);
     await Promise.all([get().fetchSubjects(), get().fetchSchedule()]);
   },
   createSlot: async (data) => {
@@ -94,16 +91,11 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     await get().fetchSchedule();
   },
   updateSlot: async (id, data) => {
-    await api.request<ScheduleSlot>(`${schedulePath}/${id}`, {
-      method: "PUT",
-      body: data,
-    });
+    await api.put<ScheduleSlot>(`${schedulePath}/${id}`, data);
     await get().fetchSchedule();
   },
   deleteSlot: async (id) => {
-    await api.request<void>(`${schedulePath}/${id}`, {
-      method: "DELETE",
-    });
+    await api.delete<void>(`${schedulePath}/${id}`);
     await get().fetchSchedule();
   },
   setSelectedDay: (day) => set({ selectedDay: day }),
