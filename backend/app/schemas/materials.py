@@ -9,3 +9,8 @@ class MaterialSearchResult(BaseModel):
     source: str
     description: str | None = None
     thumbnail_url: HttpUrl | None = None
+
+
+class AIMaterialsResponse(BaseModel):
+    materials: list[MaterialSearchResult]
+    recommendation: str = ""

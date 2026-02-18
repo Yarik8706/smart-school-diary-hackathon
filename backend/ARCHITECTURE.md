@@ -51,3 +51,24 @@
 ## Notes
 - Для AI-функции требуется `OPENROUTER_API_KEY` (настраивается через `Settings.openrouter_api_key`).
 - Добавлена зависимость `openai` в `requirements.txt` для OpenRouter-клиента.
+
+
+## Notes (2026-02-18 ai materials search)
+
+## Endpoints
+- `GET /api/v1/materials/search` теперь возвращает `AIMaterialsResponse` (`materials[]` + `recommendation`) и сначала использует AI-подбор, затем fallback в YouTube.
+- `GET /api/v1/homework/{id}/materials` теперь возвращает `AIMaterialsResponse` и использует тот же AI+fallback поток.
+
+## Services
+- `ai_materials_search` добавляет ReAct-цикл через OpenRouter (`google/gemini-2.5-flash`) c tool calling для `search_youtube` и `search_web`.
+- `web_search` добавляет DuckDuckGo-поиск (`duckduckgo-search`) и нормализацию результатов в `MaterialSearchResult`.
+
+## Data Flow
+1. Router получает тему/контекст задания.
+2. `search_materials_with_ai(...)` запускает до 5 итераций tool-calling (YouTube и web).
+3. AI делает финальную JSON-селекцию ссылок и рекомендацию.
+4. При отсутствии ключа OpenRouter или ошибке AI выполняется fallback на обычный YouTube-поиск.
+
+## Notes
+- Добавлена схема `AIMaterialsResponse` в `schemas/materials.py`.
+- Для web-поиска добавлена зависимость `duckduckgo-search`.

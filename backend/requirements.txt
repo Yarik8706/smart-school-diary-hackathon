@@ -7,3 +7,4 @@ pydantic-settings
 python-dotenv
 google-api-python-client
 openai
+duckduckgo-search

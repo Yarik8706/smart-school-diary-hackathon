@@ -2,6 +2,8 @@
 
 import { useCallback } from "react";
 
+import { IconBulb } from "@tabler/icons-react";
+
 import { MaterialList } from "@/components/materials/material-list";
 import { MaterialSearch } from "@/components/materials/material-search";
 import { useMaterialStore } from "@/store/materials";
@@ -9,7 +11,7 @@ import { useMaterialStore } from "@/store/materials";
 const subjects = ["math", "physics", "chemistry", "history"];
 
 export function MaterialsPageClient() {
-  const { materials, loading, error, searchMaterials } = useMaterialStore();
+  const { materials, recommendation, loading, error, searchMaterials } = useMaterialStore();
 
   const handleSearch = useCallback(
     (query: string, subject?: string) => {
@@ -32,6 +34,15 @@ export function MaterialsPageClient() {
         <p role="alert" className="text-sm font-semibold text-destructive">
           {error}
         </p>
+      ) : null}
+      {recommendation ? (
+        <article className="rounded-2xl border border-primary/30 bg-primary/5 p-4">
+          <header className="mb-2 flex items-center gap-2 text-sm font-bold">
+            <IconBulb size={18} aria-hidden="true" />
+            <span>AI-рекомендация</span>
+          </header>
+          <p className="text-sm text-foreground">{recommendation}</p>
+        </article>
       ) : null}
       <MaterialList materials={materials} />
     </section>
