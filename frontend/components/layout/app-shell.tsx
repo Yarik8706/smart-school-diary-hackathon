@@ -43,13 +43,16 @@ export default function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="bg-muted/30 flex min-h-screen">
-      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((prev) => !prev)} />
-      <div className="flex w-full flex-col">
-        <main ref={mainRef} className="flex-1 px-4 py-4 pb-24 md:px-8 md:py-8 md:pb-8">
+      <Sidebar
+        collapsed={collapsed}
+        onToggle={() => setCollapsed((prev) => !prev)}
+      />
+      <div className="flex min-h-screen w-full flex-col">
+        <main ref={mainRef} className="px-4 py-4 pb-24 md:px-8 md:py-8 md:pb-8">
           <div className="shell-enter">
             <Header title={pageTitle} />
           </div>
-          <div className="shell-enter rounded-3xl border border-border/70 bg-background p-4 md:p-8">
+          <div className="shell-enter border-border/70 bg-background rounded-3xl border p-4 md:p-8">
             {children}
           </div>
         </main>
