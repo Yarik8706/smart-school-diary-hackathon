@@ -16,7 +16,18 @@ interface AppShellProps {
 export default function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const mainRef = useRef<HTMLElement>(null);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    return window.localStorage.getItem("sidebar-collapsed") === "true";
+  });
+
+  const handleToggleSidebar = () => {
+    const nextValue = !collapsed;
+    setCollapsed(nextValue);
+    window.localStorage.setItem("sidebar-collapsed", String(nextValue));
+  };
 
   useLayoutEffect(() => {
     if (!mainRef.current) {
@@ -43,11 +54,8 @@ export default function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="bg-muted/30 flex min-h-screen">
-      <Sidebar
-        collapsed={collapsed}
-        onToggle={() => setCollapsed((prev) => !prev)}
-      />
-      <div className="flex min-h-screen w-full flex-col">
+      <Sidebar collapsed={collapsed} onToggle={handleToggleSidebar} />
+      <div className="flex min-h-screen w-full min-w-0 flex-col">
         <main ref={mainRef} className="px-4 py-4 pb-24 md:px-8 md:py-8 md:pb-8">
           <div className="shell-enter">
             <Header title={pageTitle} />

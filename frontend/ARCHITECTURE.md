@@ -318,3 +318,22 @@
 
 - Reminder create/update modal submits ISO UTC timestamps derived from separate date/time values.
 - Reminder cards read subject metadata from `reminder.homework.subject.{name,color}`.
+
+## Notes (2026-02-18 schedule/sidebar/notifications layering fix)
+
+## Functions
+
+- `AppShell` in `components/layout/app-shell.tsx` now initializes sidebar collapse state from `localStorage` and persists updates on toggle, while keeping the content column `min-w-0` to avoid overflow overlap on wide schedule grids.
+- `Sidebar` in `components/layout/sidebar.tsx` now has explicit `shrink-0` and `z-30` so desktop navigation remains clickable above horizontally scrollable schedule content.
+- `NotificationBell` in `components/layout/notification-bell.tsx` now renders the reminders panel through `createPortal(document.body)` with fixed positioning and elevated z-index to guarantee it layers above main content stacking contexts.
+- `ScheduleSlotCard` in `components/schedule/schedule-slot-card.tsx` now wraps action buttons and uses minimum widths so `Редактировать`/`Удалить` never overflow card bounds on narrow widths.
+
+## Data Flow
+
+1. Sidebar collapse state is restored from browser storage during `AppShell` initialization and written back on each toggle interaction.
+2. Notification dropdown DOM is mounted at `body` level via portal, so parent layout transforms/stacking contexts no longer affect reminder visibility.
+3. Schedule card action area uses flex wrapping, allowing both actions to flow to a second line when horizontal space is limited.
+
+## Notes
+
+- UI fixes target regressions on `/schedule` and header notifications without changing store contracts or API payloads.
