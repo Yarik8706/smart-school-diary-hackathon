@@ -8,7 +8,7 @@ const storeState = {
       { day: "Вт", load: 6 },
     ],
   },
-  moodStats: { easy: 2, normal: 1, hard: 1 },
+  moodStats: { easy_count: 2, normal_count: 1, hard_count: 1 },
   warnings: [],
   error: null,
   isLoadingWeekLoad: false,

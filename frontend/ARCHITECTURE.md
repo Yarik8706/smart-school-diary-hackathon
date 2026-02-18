@@ -259,3 +259,30 @@
 - Палитра предметов расширена до 14 цветов с русскими подписями в UI менеджера предметов.
 - В `components/layout/header.tsx` удалён неиспользуемый импорт `IconMenu2` для чистого lint-статуса.
 
+
+## Notes (2026-02-18 api audit alignment)
+
+## Functions
+- `useScheduleStore` и `useDashboardStore` обновили endpoint расписания до `/api/v1/schedule` и больше не используют legacy `/schedule/slots`.
+- `useHomeworkStore.makeQuery` теперь строит backend-совместимые фильтры `subject_id`, `is_completed`, `deadline_from`, `deadline_to`.
+- `useAnalyticsStore` и `useDashboardStore` читают предупреждения из объекта `{ warnings: string[] }`.
+- `WarningsList`, `WeekLoadChart`, `MoodStatsCard` приведены к backend-формату аналитики и сохраняют совместимость с legacy тестовыми структурами.
+- `useMaterialStore` отправляет `subject_id` при поиске и использует материал без обязательного `id`.
+
+## Types
+- `ScheduleSlot`/`ScheduleSlotCreate` используют поле `room`.
+- `Homework`/`HomeworkUpdate` используют `is_completed`.
+- `Reminder` использует `is_sent`, а `ReminderUpdate` ограничен полем `remind_at`.
+- Аналитические типы обновлены: `WeekLoadDay` -> `load_score`/`lessons_count`/`hard_subjects`/`warning`, `MoodStats` -> `*_count`, `WarningsResponse` -> объект с массивом строк.
+- `Material` использует `thumbnail_url` и не требует `id`.
+
+## Data Flow
+1. Schedule CRUD/store и dashboard summary ходят в `/api/v1/schedule` с payload полем `room`.
+2. Homework list фильтрация на API полностью совпадает с Query-параметрами backend и возвращает `is_completed` для UI-фильтрации.
+3. Reminders UI хранит статус через `is_sent`; при редактировании отправляется только `remind_at`.
+4. Analytics UI получает недельную нагрузку, mood stats и warnings в backend-формате без клиентского рассинхрона полей.
+5. Materials search отправляет `subject_id`, карточки используют `thumbnail_url`, key формируется от `url+title`.
+
+## Notes
+- Mock-слой (`mock-data`/`mock-api-routes`) синхронизирован с backend-контрактами и поддерживает новые query-параметры ДЗ и форматы аналитики.
+- Обновлены store/component тесты под новые API-контракты без изменения бизнес-сценариев.

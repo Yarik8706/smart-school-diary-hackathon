@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import { api } from "@/lib/api-client";
-import type { WarningItem } from "@/types/analytics";
+import type { WarningsResponse } from "@/types/analytics";
 import type { DashboardSummary } from "@/types/dashboard";
 import type { Homework } from "@/types/homework";
 import type { ScheduleSlot, Subject } from "@/types/schedule";
@@ -37,7 +37,7 @@ const getRemainingText = (deadline: string) => {
 
 const getNearestHomework = (homework: Homework[]) => {
   const nearest = homework
-    .filter((item) => !item.completed)
+    .filter((item) => !item.is_completed)
     .sort(
       (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime(),
     )[0];
@@ -74,14 +74,14 @@ const getTodayLessons = (slots: ScheduleSlot[], subjects: Subject[]) => {
   };
 };
 
-const getWarnings = (warnings: WarningItem[]) => {
+const getWarnings = (warnings: string[]) => {
   if (warnings.length === 0) {
     return emptySummary.warnings;
   }
 
   return {
     count: warnings.length,
-    description: warnings[0].message,
+    description: warnings[0],
   };
 };
 
@@ -95,16 +95,16 @@ export const useDashboardStore = create<DashboardStore>((set) => ({
     try {
       const [homework, slots, subjects, warnings] = await Promise.all([
         api.get<Homework[]>("/api/v1/homework"),
-        api.get<ScheduleSlot[]>("/api/v1/schedule/slots"),
+        api.get<ScheduleSlot[]>("/api/v1/schedule"),
         api.get<Subject[]>("/api/v1/subjects"),
-        api.get<WarningItem[]>("/api/v1/analytics/warnings"),
+        api.get<WarningsResponse>("/api/v1/analytics/warnings"),
       ]);
 
       set({
         summary: {
           nearestHomework: getNearestHomework(homework),
           todayLessons: getTodayLessons(slots, subjects),
-          warnings: getWarnings(warnings),
+          warnings: getWarnings(warnings.warnings),
         },
       });
     } catch {

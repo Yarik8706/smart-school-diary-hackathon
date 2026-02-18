@@ -30,8 +30,8 @@ describe("useAnalyticsStore", () => {
   it("fetches weekly load", async () => {
     mockedApi.get.mockResolvedValueOnce({
       days: [
-        { day: "Пн", load: 3 },
-        { day: "Вт", load: 7 },
+        { day: 1, load_score: 3, lessons_count: 3, hard_subjects: [], warning: null },
+        { day: 2, load_score: 7, lessons_count: 5, hard_subjects: ["Физика"], warning: "Высокая" },
       ],
     });
 
@@ -43,21 +43,14 @@ describe("useAnalyticsStore", () => {
 
   it("fetches mood stats and warnings", async () => {
     mockedApi.get
-      .mockResolvedValueOnce({ easy: 5, normal: 2, hard: 1 })
-      .mockResolvedValueOnce([
-        {
-          id: "w1",
-          day: "Среда",
-          message: "Высокая нагрузка",
-          recommendation: "Сделай перерыв",
-        },
-      ]);
+      .mockResolvedValueOnce({ easy_count: 5, normal_count: 2, hard_count: 1 })
+      .mockResolvedValueOnce({ warnings: ["Среда: высокая нагрузка"] });
 
     await useAnalyticsStore.getState().fetchMoodStats();
     await useAnalyticsStore.getState().fetchWarnings();
 
-    expect(useAnalyticsStore.getState().moodStats?.easy).toBe(5);
-    expect(useAnalyticsStore.getState().warnings[0]?.day).toBe("Среда");
+    expect(useAnalyticsStore.getState().moodStats?.easy_count).toBe(5);
+    expect(useAnalyticsStore.getState().warnings[0]).toContain("Среда");
   });
 
   it("sets localized error for failed requests", async () => {

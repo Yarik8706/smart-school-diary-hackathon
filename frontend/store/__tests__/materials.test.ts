@@ -28,11 +28,10 @@ describe("useMaterialStore", () => {
     mockedApi.get.mockResolvedValueOnce({
       materials: [
         {
-          id: "m1",
           title: "Линейные уравнения",
           source: "youtube",
           url: "https://youtu.be/abc",
-          thumbnail: "https://img.youtube.com/vi/abc/default.jpg",
+          thumbnail_url: "https://img.youtube.com/vi/abc/default.jpg",
           description: "Пошаговое объяснение",
         },
       ],
@@ -42,7 +41,7 @@ describe("useMaterialStore", () => {
     await useMaterialStore.getState().searchMaterials("линейные", "math");
 
     expect(mockedApi.get).toHaveBeenCalledWith(
-      "/api/v1/materials/search?query=%D0%BB%D0%B8%D0%BD%D0%B5%D0%B9%D0%BD%D1%8B%D0%B5&subject=math",
+      "/api/v1/materials/search?query=%D0%BB%D0%B8%D0%BD%D0%B5%D0%B9%D0%BD%D1%8B%D0%B5&subject_id=math",
     );
     expect(useMaterialStore.getState().materials).toHaveLength(1);
     expect(useMaterialStore.getState().recommendation).toBe("Сначала теория, потом задачи");
@@ -53,7 +52,6 @@ describe("useMaterialStore", () => {
     mockedApi.get.mockResolvedValueOnce({
       materials: [
         {
-          id: "m2",
           title: "Конспект по теме",
           source: "article",
           url: "https://example.com/article",
@@ -65,7 +63,7 @@ describe("useMaterialStore", () => {
     await useMaterialStore.getState().fetchHomeworkMaterials("h1");
 
     expect(mockedApi.get).toHaveBeenCalledWith("/api/v1/homework/h1/materials");
-    expect(useMaterialStore.getState().materials[0]?.id).toBe("m2");
+    expect(useMaterialStore.getState().materials[0]?.title).toBe("Конспект по теме");
     expect(useMaterialStore.getState().recommendation).toBe("Повтори формулы");
   });
 

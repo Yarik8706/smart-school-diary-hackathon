@@ -1,19 +1,26 @@
 import { cn } from "@/lib/utils";
-import type { WarningItem } from "@/types/analytics";
 
-interface WarningsListProps {
-  warnings: WarningItem[];
+interface LegacyWarningItem {
+  message: string;
+  recommendation?: string;
+  day?: string;
 }
 
-const getTone = (warning: WarningItem) => {
-  const value = `${warning.message} ${warning.recommendation}`.toLowerCase();
+interface WarningsListProps {
+  warnings: Array<string | LegacyWarningItem>;
+}
 
-  if (value.includes("крит") || value.includes("срочно")) {
-    return "danger" as const;
-  }
-  if (value.includes("рекомен") || value.includes("совет")) {
-    return "info" as const;
-  }
+const toMessage = (warning: string | LegacyWarningItem) =>
+  typeof warning === "string"
+    ? warning
+    : [warning.day, warning.message, warning.recommendation]
+        .filter(Boolean)
+        .join(". ");
+
+const getTone = (warning: string | LegacyWarningItem) => {
+  const value = toMessage(warning).toLowerCase();
+  if (value.includes("крит") || value.includes("срочно")) return "danger" as const;
+  if (value.includes("рекомен") || value.includes("совет")) return "info" as const;
   return "warning" as const;
 };
 
@@ -35,19 +42,12 @@ export function WarningsList({ warnings }: WarningsListProps) {
       <h3 className="text-xl font-black">Предупреждения</h3>
       {warnings.length ? (
         <ul className="mt-4 space-y-3" role="list">
-          {warnings.map((warning) => {
+          {warnings.map((warning, index) => {
             const tone = getTone(warning);
             return (
-              <li
-                key={warning.id}
-                className={cn("rounded-xl border p-3", toneClass[tone])}
-              >
-                <p className="text-sm font-bold">{warning.day}</p>
-                <p className="text-muted-foreground mt-1 text-xs">{toneLabel[tone]}</p>
-                <p className="mt-1 text-sm">{warning.message}</p>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  Рекомендация: {warning.recommendation}
-                </p>
+              <li key={`${toMessage(warning)}-${index}`} className={cn("rounded-xl border p-3", toneClass[tone])}>
+                <p className="text-muted-foreground text-xs">{toneLabel[tone]}</p>
+                <p className="mt-1 text-sm">{toMessage(warning)}</p>
               </li>
             );
           })}

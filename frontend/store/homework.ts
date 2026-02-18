@@ -38,9 +38,23 @@ const subjectsPath = "/api/v1/subjects";
 const makeQuery = (filters?: HomeworkFiltersState) => {
   if (!filters) return "";
   const params = new URLSearchParams();
-  if (filters.subject !== "all") params.set("subject", filters.subject);
-  if (filters.status !== "all") params.set("status", filters.status);
-  if (filters.deadline !== "all") params.set("deadline", filters.deadline);
+  if (filters.subject !== "all") params.set("subject_id", filters.subject);
+  if (filters.status === "completed") params.set("is_completed", "true");
+  if (filters.status === "active") params.set("is_completed", "false");
+  if (filters.deadline === "week") {
+    const start = new Date();
+    const end = new Date();
+    end.setDate(end.getDate() + 7);
+    params.set("deadline_from", start.toISOString().split("T")[0]);
+    params.set("deadline_to", end.toISOString().split("T")[0]);
+  }
+  if (filters.deadline === "month") {
+    const start = new Date();
+    const end = new Date();
+    end.setMonth(end.getMonth() + 1);
+    params.set("deadline_from", start.toISOString().split("T")[0]);
+    params.set("deadline_to", end.toISOString().split("T")[0]);
+  }
   const query = params.toString();
   return query ? `?${query}` : "";
 };

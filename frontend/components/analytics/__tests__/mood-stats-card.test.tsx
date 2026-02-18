@@ -5,7 +5,7 @@ import { MoodStatsCard } from "@/components/analytics/mood-stats-card";
 
 describe("MoodStatsCard", () => {
   it("renders values and percentages", () => {
-    render(<MoodStatsCard stats={{ easy: 4, normal: 3, hard: 3 }} />);
+    render(<MoodStatsCard stats={{ easy_count: 4, normal_count: 3, hard_count: 3 }} />);
 
     expect(screen.getByText("Статистика настроения")).toBeInTheDocument();
     expect(screen.getByText("Легко: 4")).toBeInTheDocument();

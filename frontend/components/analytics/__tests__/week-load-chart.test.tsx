@@ -8,9 +8,9 @@ describe("WeekLoadChart", () => {
     render(
       <WeekLoadChart
         days={[
-          { day: "Пн", load: 2 },
-          { day: "Вт", load: 5 },
-          { day: "Ср", load: 8 },
+          { day: 1, load_score: 2, lessons_count: 3, hard_subjects: [], warning: null },
+          { day: 2, load_score: 5, lessons_count: 4, hard_subjects: [], warning: null },
+          { day: 3, load_score: 8, lessons_count: 6, hard_subjects: ["Физика"], warning: "Высокая" },
         ]}
       />,
     );

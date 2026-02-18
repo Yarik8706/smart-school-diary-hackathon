@@ -30,10 +30,10 @@ export function MaterialCard({ material }: MaterialCardProps) {
 
   return (
     <article className="grid gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
-      {material.thumbnail ? (
+      {material.thumbnail_url ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={material.thumbnail}
+          src={material.thumbnail_url}
           alt={`Превью материала ${material.title}`}
           className="h-36 w-full rounded-xl object-cover"
         />
