@@ -53,7 +53,7 @@ export default function SchedulePageClient() {
   };
 
   return (
-    <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-6 md:px-6 md:py-10">
+    <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 sm:px-2 py-0 md:px-6 md:py-10">
       <header className="space-y-3">
         <p className="text-primary text-xs font-semibold tracking-[0.2em] uppercase">
           расписание
@@ -119,5 +119,5 @@ export default function SchedulePageClient() {
         subjects={subjects}
       />
     </main>
-  );
+  )
 }

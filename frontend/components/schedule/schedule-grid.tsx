@@ -88,11 +88,11 @@ export default function ScheduleGrid({
                     <p className="text-muted-foreground text-sm">Нет уроков</p>
                   )}
                 </article>
-              );
+              )
             })}
           </div>
         </div>
       </div>
     </section>
-  );
+  )
 }

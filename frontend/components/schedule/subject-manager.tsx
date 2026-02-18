@@ -117,5 +117,5 @@ export default function SubjectManager({
         </div>
       </section>
     </ModalOverlay>
-  );
+  )
 }
