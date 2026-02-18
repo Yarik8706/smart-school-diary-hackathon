@@ -106,6 +106,7 @@ export default function SchedulePageClient() {
           setEditingSlot(undefined);
         }}
         onSubmit={handleSubmitSlot}
+        onDeleteSubject={deleteSubject}
         schedule={schedule}
         subjects={subjects}
       />

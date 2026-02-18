@@ -16,7 +16,7 @@ async def create_schedule_slot(db: AsyncSession, obj_in: ScheduleSlotCreate) -> 
         day_of_week=obj_in.day_of_week,
         start_time=obj_in.start_time,
         end_time=obj_in.end_time,
-        room=obj_in.room_number,
+        room=obj_in.room,
     )
     db.add(db_slot)
     await db.commit()
@@ -52,8 +52,6 @@ async def update_schedule_slot(
         return None
 
     update_data = obj_in.model_dump(exclude_unset=True)
-    if "room_number" in update_data:
-        update_data["room"] = update_data.pop("room_number")
 
     for field, value in update_data.items():
         setattr(db_slot, field, value)

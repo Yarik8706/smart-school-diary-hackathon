@@ -8,8 +8,7 @@ describe("ReminderEditModal", () => {
     {
       id: "h1",
       title: "Алгебра №1",
-      subject: "Алгебра",
-      subject_color: "bg-blue-500",
+      subject: { name: "Алгебра", color: "bg-blue-500" },
     },
   ];
 
@@ -26,8 +25,11 @@ describe("ReminderEditModal", () => {
       />,
     );
 
-    fireEvent.change(screen.getByLabelText("Время напоминания"), {
-      target: { value: "2000-01-01T10:00" },
+    fireEvent.change(screen.getByLabelText("Дата"), {
+      target: { value: "2000-01-01" },
+    });
+    fireEvent.change(screen.getByLabelText("Время"), {
+      target: { value: "10:00" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Сохранить" }));
 

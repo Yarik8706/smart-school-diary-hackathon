@@ -35,7 +35,7 @@ export function ReminderCard({
   onDelete,
 }: ReminderCardProps) {
   const markerClass =
-    subjectDot[reminder.homework?.subject_color ?? ""] ?? "bg-slate-500";
+    subjectDot[reminder.homework?.subject?.color ?? ""] ?? "bg-slate-500";
 
   return (
     <article className="bg-card rounded-xl border p-4 shadow-sm transition hover:-translate-y-0.5">
@@ -63,7 +63,7 @@ export function ReminderCard({
             className={cn("size-2 rounded-full", markerClass)}
             aria-hidden
           />
-          {reminder.homework?.subject ?? uiText.common.noSubject}
+          {reminder.homework?.subject?.name ?? uiText.common.noSubject}
         </p>
         <div className="flex w-full flex-wrap justify-end gap-2 sm:w-auto sm:flex-nowrap">
           <Button size="sm" variant="outline" onClick={() => onEdit(reminder)}>

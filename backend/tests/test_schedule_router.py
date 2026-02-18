@@ -26,7 +26,7 @@ def _build_slot(subject: SubjectRead | None = None) -> ScheduleSlotRead:
         day_of_week=1,
         start_time=time(8, 30),
         end_time=time(9, 15),
-        room_number="101",
+        room="101",
         created_at=now,
         updated_at=now,
     )
@@ -52,7 +52,7 @@ def test_create_schedule_slot_returns_created_slot(monkeypatch: pytest.MonkeyPat
         day_of_week=0,
         start_time=time(9, 0),
         end_time=time(9, 45),
-        room_number="202",
+        room="202",
     )
     expected = _build_slot()
 
@@ -80,7 +80,7 @@ def test_get_schedule_slot_raises_404_when_not_found(monkeypatch: pytest.MonkeyP
 
 
 def test_update_schedule_slot_raises_404_when_not_found(monkeypatch: pytest.MonkeyPatch) -> None:
-    payload = ScheduleSlotUpdate(room_number="303")
+    payload = ScheduleSlotUpdate(room="303")
 
     async def fake_update_schedule_slot(db, slot_id, obj_in):
         return None
